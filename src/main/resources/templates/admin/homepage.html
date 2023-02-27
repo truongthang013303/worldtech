@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{/admin/adminLayout.html}" >
+<head>
+<title>Admin</title>
+</head>
+<body>
+	<div class="page-content" layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12 text-center" style="font-size: 30px">
+			Homepage
+			</div>
+		</div>
+		<div class="row">
+					<div class="col-xs-4"></div>
+					<div class="col-xs-4">
+						<div class="table-responsive">
+						<div style="height: 30px"></div>
+							<table class="table table-bordered">
+								<thead>
+									<tr>
+										<!-- <th>ID</th> -->
+										<th>Thể loại</th>
+										<th>Số lượng bài viết</th>
+									</tr>
+								</thead>
+								<tbody>
+										<tr th:each="item: ${map}">
+											<!-- <td>[[${item.key.id}]]</td> -->
+											<td th:each="element: ${item.key}">
+												<span>[[${element.name}]]</span>/
+												<a th:href="@{/quantri(catecode=${element.code}, cateid=${element.id})}">[[${element.code}]]</a>
+											</td>
+											<td th:text="${item.value}">Số lượng</td>
+										</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+	</div>
+</body>
+</html>

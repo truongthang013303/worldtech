@@ -1,0 +1,24 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head>
+		<th:block th:replace="/web/fragments::web_header"></th:block>
+	</head>
+	<body>
+		<nav th:replace="/web/fragments :: navbar"></nav>
+		<!-- Page header with logo and tagline-->
+		<header th:replace="/web/fragments :: logo"> </header>
+        <!-- Page content-->
+        <div class="container">
+            <div class="row">
+                <!-- Blog entries-->
+			<div class="col-lg-8" layout:fragment="content">
+
+			</div>
+				<!-- Side widgets-->
+                <div th:replace="/web/fragments :: rightmenu" ><!--  class="col-lg-4" --></div>
+            </div>
+        </div>	
+        
+        <div th:replace="/web/fragments :: footer" ></div>	
+	</body>
+</html>

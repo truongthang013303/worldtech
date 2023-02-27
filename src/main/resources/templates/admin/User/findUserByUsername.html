@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{/admin/adminLayout.html}" >
+<head>
+<title>Tìm user</title>
+</head>
+<body>
+	<div class="page-content" layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+						<div id="divAlert" th:if="${message!=null} " th:text="${message}" class ="alert" th:classappend="${#strings.length(message)>1} ? alert-+${alert} : alert">
+							<input type="hidden" name="alert" id="alert"/>
+						</div>
+						
+						<div id="divAlert2" th:if="${model.userName!=null} " th:text="${model.userName}">
+
+						</div>
+						<div>
+							<h1>TEST</h1>						
+						</div>
+				<form th:action="@{/finduser}" th:object="${model}" method="post" class="form-horizontal" role="form" id="formSubmit"> <!-- th:action="@{/quantri/baiviet/chinhsua}" -->					
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right"
+							for="form-field-1">username</label>
+						<div class="col-sm-9">
+							<input type="text" name="username" class="col-xs-10 col-sm-5" th:field="*{userName}"/>
+						</div>
+					</div>
+					<div class="clearfix form-actions">
+
+						<div class="col-md-offset-3 col-md-9">
+							<button class="btn btn-info" type="submit" id="btnAddOrUpdateNew">
+								<i class="ace-icon fa fa-check bigger-110"></i> 
+								Tim kiem
+							</button>
+							&nbsp; &nbsp; &nbsp;
+							<button class="btn" type="reset" onclick="quay_lai_trang_truoc()">
+								<i class="ace-icon fa fa-undo bigger-110"></i> Hủy
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

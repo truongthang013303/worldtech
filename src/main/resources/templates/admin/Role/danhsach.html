@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{/admin/adminLayout.html}" >
+<head>
+<title>Danh sách</title>
+</head>
+<body>
+	<div class="page-content" layout:fragment="content">
+	<form th:action="@{/quantri/role/danhsach}" id="formSubmit" method="get">
+		<div class="row">
+			<div class="col-xs-12">
+				<div id="divAlert" th:if="${model.message!=null} " th:text="${model.message}" class ="alert" th:classappend="${#strings.length(model.message)>1} ? alert-+${model.alert} : alert">
+						<input type="hidden" name="alert" id="alert"/>
+				</div>
+				<div class="widget-box table-filter">
+					<div class="table-btn-controls">
+						<div class="pull-right tableTools-container">
+							<div class="dt-buttons btn-overlap btn-group">
+								<a flag="info"
+									class="dt-button buttons-colvis btn btn-white btn-primary btn-bold"
+									data-toggle="tooltip" title='Thêm'
+									href='/quantri/role/chinhsua'> <span> <i
+										class="fa fa-plus-circle bigger-110 purple"></i>
+								</span>Thêm
+								</a>
+								<button id="btnDelete" type="button"
+									onclick="warningBeforeDelete()"
+									class="dt-button buttons-html5 btn btn-white btn-primary btn-bold"
+									data-toggle="tooltip" title='Xóa'>
+									<span> <i class="fa fa-trash-o bigger-110 pink"></i>
+									</span>Xóa
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="table-responsive">
+						<!-- <div th:text="${#dates.createNow()}"></div> -->
+						<div>
+							<select name="sort" id="sort">
+								<option value="createdDate-DESC">Mới nhất</option>
+								<option value="createdDate-ASC">Cũ nhất</option>
+								<option value="modifiedDate-DESC">Chỉnh sửa gần đây nhất</option>
+								<option th:value="${sort}" selected>[[${sort}]]</option>
+							</select>
+						</div>
+							<table class="table table-bordered">
+								<thead>
+									<tr>
+										<th><input type="checkbox" id="checkAll"></th>
+										<th>Name</th>
+										<th>Code</th>
+										<th>Thao tác</th>
+									</tr>
+								</thead>
+								<tbody>
+										<tr th:each="model, iState:${model.listResult}">
+											<td><input class="chk" type="checkbox" th:id="checkbox_+${model.id}" th:value="${model.id}"> </td>
+											<td th:text="${model.name}"></td>
+											<td th:text="${model.code}"></td>
+											<td><a th:href=" @{ /quantri/role/chinhsua (id=${model.id}) } ">Edit</a></td>
+										</tr>
+								</tbody>
+							</table>
+						<!-- Pagination -->
+						<div class="text-center">
+							<h4 th:text="'totalPages:'+${model.totalPage}"></h4>
+							<h4 th:text="'totalItems:'+${model.totalItem}"></h4>
+							<h4 th:text="'Current Page:'+${model.page}"></h4>
+							<h4 th:text="'Sort:'+${sort}"></h4>
+							<nav aria-label="Pagination">
+	                        <hr class="my-0" />
+	                        	<ul class="pagination justify-content-center my-4">
+									<li class="page-item"><a class="page-link" th:if="${model.page>1}" th:href="@{/quantri/role(page=1,limit=3,sort=${sort})}">First</a></li>
+									<li class="page-item"><span class="page-link" th:unless="${model.page>1}">First</span></li>
+									
+									<li class="page-item"><a class="page-link" href="#" tabindex="-1" aria-disabled="true" th:if="${model.page>1}" th:href="@{/quantri/role(page=${model.page-1},limit=3,sort=${sort})}">Newer</a></li>
+	
+									<th:block th:each="item, state:${#numbers.sequence(1,model.totalPage)}">
+										<li class="page-item" th:class="${item!=model.page}?'page-item':'page-item active'">
+											<a class="page-link" th:href="@{/quantri/role(page=${item},limit=3,sort=${sort})}">[[${item}]]</a>
+										</li>
+									</th:block>
+									
+									<li class="page-item"><a class="page-link" th:if="${model.page<model.totalPage}" th:href="@{/quantri/role(page=${model.page+1},limit=3,sort=${sort})}">Older</a></li>
+									
+									<li class="page-item"><a class="page-link" th:if="${model.page<model.totalPage}" th:href="@{/quantri/role(page=${model.totalPage},limit=3,sort=${sort})}">Last</a></li>
+									<li class="page-item"><span class="page-link" th:unless="${model.page<model.totalPage}">Last</span></li>
+								</ul>
+							</nav>
+						</div>
+						<!-- Pagination -->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+<input type="hidden" name="page" th:value="${model.page}" id="page" />
+		<script>
+        $("#checkAll").change(function(){
+            var status = $(this).is(":checked") ? true : false;
+            $(".chk").prop("checked",status);
+        });
+ 		$("#sort").change(function(){
+        	$("#formSubmit").submit();
+        });
+			function warningBeforeDelete() {
+					swal({
+					  title: "Xác nhận xóa",
+					  text: "Bạn có chắc chắn muốn xóa hay không",
+					  type: "warning",
+					  showCancelButton: true,
+					  confirmButtonClass: "btn-success",
+					  cancelButtonClass: "btn-danger",
+					  confirmButtonText: "Xác nhận",
+					  cancelButtonText: "Hủy bỏ",
+					}).then(function(isConfirm) {
+					  if (isConfirm) {
+							var ids = $('tbody input[type=checkbox]:checked').map(function () {
+					            return $(this).val();
+					        }).get();
+							deleteFunc(ids);
+					  }
+					});
+			} 
+			function deleteFunc(data) 
+			{
+		        $.ajax({
+		            url: '/api/role',
+		            type: 'DELETE',
+		            contentType: 'application/json',
+		            data: JSON.stringify(data),
+		            success: function (result) {
+		                //window.location.href = "/quantri/baiviet/danhsach?page="+$('#page').val()+"&limit=2&message=delete_success";
+		                alert("Xóa thành công");
+		            },
+		            error: function (error) {
+		            	//window.location.href = "/quantri/baiviet/danhsach?page="+$('#page').val()+"&limit=2&message=error_system";
+		            	alert("Xóa thất bại");
+		            }
+		        });
+		    }
+		</script>		
+	</div>
+
+</body>
+</html>

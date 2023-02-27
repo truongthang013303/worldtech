@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{/admin/adminLayout.html}" >
+<head>
+<title>Chỉnh sửa</title>
+</head>
+<body>
+	<div class="page-content" layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+						<div id="divAlert" th:if="${model.message!=null} " th:text="${model.message}" class ="alert" th:classappend="${#strings.length(model.message)>1} ? alert-+${model.alert} : alert">
+							<input type="hidden" name="alert" id="alert"/>
+						</div>
+				<form th:object="${model}" method="post" class="form-horizontal" role="form" id="formSubmit">
+					
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right">Fullname</label>
+						<div class="col-sm-9">
+							<input th:field="*{fullName}" type="text" class="col-xs-10 col-sm-5" />
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right">Username</label>
+						<div class="col-sm-9">
+							<input type="text" th:field="*{userName}" class="col-xs-10 col-sm-5"></input>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right">Password</label>
+						<div class="col-sm-9">
+							<input type="text" th:field="*{password}" class="col-xs-10 col-sm-5"></input>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right">RePassword</label>
+						<div class="col-sm-9">
+							<input type="text" id="passConfir" name="passConfir" class="col-xs-10 col-sm-5"></input>
+						</div>
+					</div>
+					<th:block th:each="role: ${roles}">
+						<div class="form-group">
+							<label class="col-sm-3 control-label no-padding-right"></label>
+							<div class="col-sm-9">
+								<input type="checkbox" th:field="*{roleCode}" th:value="${role.code}" class="col-sm-1"> [[${role.name}]]
+							</div>
+						</div>
+					</th:block>
+					<input type="hidden" th:field="*{id}" id="userId" />
+
+					<div class="clearfix form-actions">
+						<div class="col-md-offset-3 col-md-9">
+							<button th:text="*{id}?'Cập nhật':'Thêm'" class="btn btn-info" type="submit" id="btnAddOrUpdateNew">
+								<i class="ace-icon fa fa-check bigger-110"></i> 
+							</button>
+							&nbsp; &nbsp; &nbsp;
+							<button class="btn" type="reset" onclick="quay_lai_trang_truoc()">
+								<i class="ace-icon fa fa-undo bigger-110"></i> Hủy
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+<script>
+$("#formSubmit").validate({
+    rules: {
+    	fullName: {
+            required: true,
+            minlength: 8,
+            maxlength:32
+        },
+       	userName:{
+        	required: true,
+        	nowhitespace:true,
+            minlength: 8,
+            maxlength:32
+        },
+        password:{
+        	required: true,
+        	nowhitespace:true,
+            minlength: 8,
+            maxlength:32
+        },
+        passConfir:{
+        	required: true,
+        	nowhitespace:true,
+            minlength: 8,
+            maxlength:32
+        },
+        roleCode:{
+        	required: true
+        }     
+    },
+    submitHandler: function(form) 
+    {
+    	callAJAX();
+    },
+    errorElement:'span',
+    errorClass:'errorMessage',
+    validClass:'is-valid',
+});
+</script>	
+<!-- <script>
+$("#formSubmit").validate({
+    rules: {},
+    submitHandler: function(form) 
+    {
+        //form.submit();
+    	callAJAX();
+    }
+});
+</script>	 -->	
+		<script>
+		function callAJAX()
+		{
+		    	        var formData = new FormData($("#formSubmit")[0]);	       
+		    	        var data = Object.fromEntries(formData.entries()); //data{}
+		    	        //data.roleCode=[];
+						data.roleCode = formData.getAll("roleCode");
+		    	     	var id = $('#userId').val();
+		    		    if (id == "")
+		    		    {
+		    		    	console.log("add");
+		    		    	console.log(data);
+		    		    	add(data);
+		    		    } else
+		    		    {
+		    		    	console.log("edit");
+		    		    	console.log(data);
+		    		    	update(data);
+		    		    }
+		}
+			function add(data) 
+			{
+				$.ajax({
+		            url: '/api/user',
+		            type: 'POST',
+		            contentType: 'application/json',
+		            data: JSON.stringify(data),
+		            dataType: 'json',
+		            success: function (result) {
+		            	alert("Thành công");
+		            	window.location.href = "/quantri/nguoidung/chinhsua?id="+result.id+"&message=insert_success";
+		            },
+		            error: function (error) {
+		            	alert("Thất bại mời thử lại");
+		            	window.location.href = "/quantri/nguoidung/chinhsua?message=error_system";
+		            }
+		        });
+			}			
+			function update(data) 
+			{
+				$.ajax({
+		            url: '/api/user',
+		            type: 'PUT',
+		            contentType: 'application/json',
+		            data: JSON.stringify(data),
+		            dataType: 'json',
+		            success: function (result) {
+		            	//console.log(result);
+		            	//console.log(JSON.stringify(result));
+		            	alert("Thành công");
+		            	window.location.href = "/quantri/nguoidung/chinhsua?id="+result.id+"&message=insert_success";
+		            },
+		            error: function (error) {
+		            	alert("Thất bại mời thử lại");
+		            	window.location.href = "/quantri/baiviet/chinhsua?message=error_system";		            	
+		            }
+		        });
+			}			
+		    function quay_lai_trang_truoc()
+		    {
+		        history.back();
+		    }
+		</script>			
+	</div>
+</body>
+</html>

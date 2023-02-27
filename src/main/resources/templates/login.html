@@ -1,0 +1,71 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<script th:src="@{/global/admin/assets/js/jquery-2.1.4.min.js}"></script>	
+	<script th:src="@{/global/jqueryvalidate/jquery.validate.min.js}"></script>
+	<script th:src="@{/global/jqueryvalidate/additional-methods.min.js}"></script>
+	<script th:src="@{/global/jqueryvalidate/bootstrap.min.js}"></script>
+	<link rel="stylesheet" th:href="@{/global/jqueryvalidate/bootstrap.min.css}" />
+	
+	<title>Login</title>
+</head>
+<body>
+<style>
+	.error
+	{
+		color:red;
+	}
+</style>
+		<div class="row" style="height:80px;"></div>
+	    <div class="container-fluid row justify-content-center">
+	        <form th:action="@{/login}" class="col-sm-3" id="formSubmit" method="post">
+	           <div class="form-group">
+		            <h1 class="text-center" style="font-weight: bold;">Đăng nhập</h1>
+	           </div>
+	            <div class="form-group">
+		            <h4 th:if="${error}" class="text-center error">Sai tên đăng nhập hoặc mật khẩu</h4>
+	           </div>
+	            <div class="form-group">
+		              <label for="fullname">Username</label>
+		              <input id="username" name="username" type="text" class="form-control"  aria-describedby="emailHelp" placeholder="Fullname">
+		              <small id="emailHelp" class="form-text text-muted">We'll never share your fullname with anyone else.</small>
+	            </div>
+	
+	            <div class="form-group">
+		              <label for="password">Password</label>
+		              <input id="password" name="password" type="password" class="form-control" placeholder="Password">
+	            </div>
+	           
+	            <button id="btnAddOrUpdateNew" type="submit" class="btn btn-primary">Login</button>
+				<div class="row">
+					<div class="col">
+						<label for=""><a th:href="@{/register}">Tạo mới tài
+								khoản</a></label>
+					</div>
+	
+					<div class="col text-right">
+						<label for=""><a th:href="@{/home}">Về Trang Chủ</a></label>
+					</div>
+				</div>
+			</form>
+	    </div>	
+      <script>
+        $("#formSubmit").validate({
+            rules: {
+                username: {
+                    required: true,
+                    minlength:5,
+                    maxlength:32,
+                    nowhitespace:true
+                },
+                password: {
+                    required: true,
+                    minlength: 6,
+                    maxlength:32,
+                    nowhitespace:true
+                }               
+            }
+        });
+    </script> 
+</body>
+</html>

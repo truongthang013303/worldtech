@@ -1,0 +1,47 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+	<th:block th:replace="/admin/fragments::admin_header"></th:block>
+</head>
+<body class="no-skin">
+<!-- topNav -->
+    <div th:replace="/admin/fragments::admin_topNav"></div>
+<!-- topNav -->	
+	<div class="main-container ace-save-state" id="main-container">
+			<script type="text/javascript">
+				try{ace.settings.loadState('main-container')}catch(e){}
+			</script>
+		<!-- sideBar -->
+    	<div th:replace="/admin/fragments::admin_sideBar"></div>
+		<!-- sideBar --> 
+		<div class="main-content">
+				<div class="main-content-inner" style="font-size: 16px;">
+					<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+						<div class="nav-search" id="nav-search">
+							<form class="form-search">
+<!-- 								<span class="input-icon">
+									<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+									<i class="ace-icon fa fa-search nav-search-icon"></i>
+								</span> -->
+							</form>
+						</div><!-- /.nav-search -->
+					</div>
+
+					<div layout:fragment="content">
+					
+					</div>
+					
+				</div>
+		</div><!-- /.main-content -->
+			
+			<!-- footer -->
+	    	<div th:replace="/admin/fragments::admin_footer"></div>
+	    	<!-- footer -->
+			<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+				<i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+			</a>
+	</div><!-- /.main-container -->	
+			
+<div th:replace="~{/admin/fragments::admin_js}">	
+</body>
+</html>

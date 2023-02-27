@@ -1,0 +1,152 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+	<head >
+	<th:block th:fragment="admin_header">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta charset="UTF-8" />
+		<meta name="description" content="overview &amp; stats" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+		
+		<link rel="stylesheet" th:href="@{/global/admin/assets/css/bootstrap.min.css}" />		
+		<link rel="stylesheet" th:href="@{/global/admin/assets/font-awesome/4.5.0/css/font-awesome.min.css}" />		
+		<link rel="stylesheet" th:href="@{/global/admin/assets/css/admin_style.css}" />
+		<link rel="stylesheet" th:href="@{/global/admin/assets/css/ace.min.css}" class="ace-main-stylesheet" id="main-ace-style" />
+		<link rel="stylesheet" th:href="@{/global/admin/assets/css/ace-skins.min.css}" />
+		<link rel="stylesheet" th:href="@{/global/admin/assets/css/ace-rtl.min.css}" />
+		<link rel="stylesheet" th:href="@{/global/sweetalert/sweetalert2.min.css}" />
+		
+		<script th:src="@{/global/admin/assets/js/ace-extra.min.js}"></script>
+		<script th:src="@{/global/admin/assets/js/jquery-2.1.4.min.js}"></script>			
+ 		<script th:src="@{/global/jqueryvalidate/jquery.validate.min.js}"></script>
+		<script th:src="@{/global/jqueryvalidate/additional-methods.min.js}"></script>
+		
+<!-- 		<script th:src="@{/global/ckeditor/styles.js}"></script>
+		
+		<link rel="stylesheet" th:href="@{/global/ckeditor/contents.css}" /> -->
+		
+	</th:block>
+	<title>Admin</title>
+</head>
+<body>
+<!-- topNav -->
+<div id="navbar" class="navbar navbar-default ace-save-state" th:fragment="admin_topNav">
+    <div class="navbar-container ace-save-state" id="navbar-container">
+        <div class="navbar-header pull-left">
+            <a th:href="@{/quantri}" class="navbar-brand">
+                <small>
+                    <i class="fa fa-leaf"></i>
+                    Trang quản trị
+                </small>
+            </a>
+        </div>
+        <div class="navbar-buttons navbar-header pull-right collapse navbar-collapse" role="navigation">
+            <ul class="nav ace-nav">
+                <li class="light-blue dropdown-modal">
+                    <a class="dropdown-toggle" sec:authorize="isAuthenticated()" style="text-decoration: none;">
+                        Welcome: <span sec:authentication="name">Username</span>
+                    </a>                   
+                </li>
+				<li class="light-blue dropdown-modal">
+					<a th:href='@{/logout}'>
+						<i class="ace-icon fa fa-power-off"></i> Thoát
+					</a>
+				</li>
+			</ul>
+        </div>
+    </div>
+</div>
+<!-- topNav -->	
+    
+<!-- sideBar -->
+<div id="sidebar" class="sidebar responsive ace-save-state" th:fragment="admin_sideBar">
+    <script>
+        try{ace.settings.loadState('sidebar')}catch(e){}
+    </script>
+    <ul class="nav nav-list" >
+        <li>
+            <a href="#" class="dropdown-toggle" >
+                <i class="menu-icon fa fa-list"></i>
+                <span class="menu-text"></span>
+                <span style="font-size: 20px">Quản lý</span>
+            </a>
+            <b class="arrow"></b>
+            <style>.noneDecoration{text-decoration: none}</style>
+            <ul class="submenu">
+	                <li>
+	                    <a th:href="@{/quantri/baiviet/danhsach}" class="noneDecoration">
+	                        <i class="menu-icon fa fa-caret-right"></i>
+	                        Bài viết
+	                    </a>
+	                    <b class="arrow"></b>
+	                </li>
+	                 <li>
+	                    <a th:href="@{/quantri/theloai/danhsach}" class="noneDecoration">
+	                        <i class="menu-icon fa fa-caret-right"></i>
+	                        Thể loại
+	                    </a>
+	                    <b class="arrow"></b>
+	                </li>
+	                
+	                 <li>
+	                    <a th:href="@{/quantri/nguoidung}" class="noneDecoration">
+	                        <i class="menu-icon fa fa-caret-right"></i>
+	                        Người dùng
+	                    </a>
+	                    <b class="arrow"></b>
+	                </li>             
+	                <li>
+	                    <a th:href="@{/quantri/role}" class="noneDecoration">
+	                        <i class="menu-icon fa fa-caret-right"></i>
+	                      	Role
+	                    </a>
+	                    <b class="arrow"></b>
+	                </li>
+	                <li>
+	                    <a th:href="@{/finduser}" class="noneDecoration">
+	                        <i class="menu-icon fa fa-caret-right"></i>
+	                       Find User
+	                    </a>
+	                    <b class="arrow"></b>
+	                </li>          
+            </ul>
+        </li>
+    </ul>
+    <div class="sidebar-toggle sidebar-collapse">
+        <i class="ace-icon fa fa-angle-double-left ace-save-state" data-icon1="ace-icon fa fa-angle-double-left" data-icon2="ace-icon fa fa-angle-double-right"></i>
+    </div>
+</div>
+<!-- sideBar -->    
+    
+    
+<!-- footer -->
+<div class="footer" th:fragment="admin_footer">
+    <div class="footer-inner">
+        <div class="footer-content">
+						<span class="bigger-120">
+							<span class="blue bolder">Spring Framework</span>
+						</span>
+            &nbsp; &nbsp;
+            <span class="action-buttons">
+							<a href="#">
+								<i class="ace-icon fa fa-twitter-square light-blue bigger-150"></i>
+							</a>
+
+							<a href="#">
+								<i class="ace-icon fa fa-facebook-square text-primary bigger-150"></i>
+							</a>
+
+							<a href="#">
+								<i class="ace-icon fa fa-rss-square orange bigger-150"></i>
+							</a>
+						</span>
+        </div>
+    </div>
+</div>
+<!-- footer -->
+		<div th:fragment="admin_js">
+			<script th:src="@{/global/admin/assets/js/bootstrap.min.js}"></script>
+			<script th:src="@{/global/admin/assets/js/ace.min.js}"></script>		
+			<script th:src="@{/global/sweetalert/sweetalert2.min.js}"></script> 
+		</div>
+</body>
+</html>

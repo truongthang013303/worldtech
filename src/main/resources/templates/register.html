@@ -1,0 +1,132 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<script th:src="@{/global/admin/assets/js/jquery-2.1.4.min.js}"></script>	
+	<script th:src="@{/global/jqueryvalidate/jquery.validate.min.js}"></script>
+	<script th:src="@{/global/jqueryvalidate/additional-methods.min.js}"></script>
+	<script th:src="@{/global/jqueryvalidate/bootstrap.min.js}"></script>
+	<link rel="stylesheet" th:href="@{/global/jqueryvalidate/bootstrap.min.css}" />
+	
+	<title>Đăng ký</title>
+</head>
+<body>
+<style>
+	.error
+	{
+		color:red;
+	}
+</style>
+  <div class="row" style="height:80px;"></div>
+    <div class="container-fluid row justify-content-center">
+        <form class="col-sm-3" id="formSubmit" method="post" th:object="${model}">
+          <div class="form-group">
+            <h1 class="text-center" style="font-weight: bold;">Register</h1>
+          </div>
+ 				<div id="divAlert" th:if="${model.message!=null} " th:text="${model.message}" class ="alert" th:classappend="${#strings.length(model.message)>1} ? alert-+${model.alert} : alert">
+				</div>         
+            <div class="form-group">
+              <label for="fullname">Username</label>
+              <input th:field="*{userName}" type="text" class="form-control"  aria-describedby="emailHelp" placeholder="Username">
+              <small id="emailHelp" class="form-text text-muted">We'll never share your Username with anyone else.</small>
+              <span class="form-message"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Fullname</label>
+              <input th:field="*{fullName}" type="text"  class="form-control"  aria-describedby="emailHelp" placeholder="Enter Fullname">
+              <small id="emailHelp" class="form-text text-muted">We'll never share your Fullname with anyone else.</small>
+              <span class="form-message"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input th:field="*{password}" type="password" class="form-control" placeholder="Password">
+              <span class="form-message"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="password_confirmation">Password Confirmation</label>
+              <input type="password" id="password_confir" name="password_confir" class="form-control"  placeholder="Password Confirmation">
+              <span class="form-message"></span>
+            </div>
+            
+            <button id="btnAddOrUpdateNew" type="submit" class="btn btn-primary">Submit</button>
+
+			<div class="row">
+				<div class="col">
+					<label for="">
+					<a th:href="@{/login}">Bạn đã có tài khoản?</a></label>
+					<!-- <span class="form-message"></span> -->
+				</div>
+
+				<div class="col text-right">
+					<label for=""><a th:href="@{/home}">Về Trang Chủ</a></label>
+					<!-- <span class="form-message"></span> -->
+				</div>
+			</div>
+		</form>
+    </div>
+</body>
+    <script>
+        $("#formSubmit").validate({
+            rules: {
+                userName: {
+                    required: true,
+                    minlength: 8,
+                    maxlength:32,
+                    nowhitespace:true
+                }, 
+                fullName:{
+                    required: true,
+                    minlength: 8,
+                    maxlength:32,
+                },
+                password: {
+                    required: true,
+                    minlength: 8,
+                    maxlength:32,
+                    nowhitespace:true
+                },
+                password_confir: {
+                    required: true,
+                    minlength: 8,
+                    maxlength:32,
+                    nowhitespace:true,
+                    equalTo:'#password'
+                }
+            }
+            ,submitHandler: function(form) 
+            {
+            	callAJAX();
+            },
+        });
+    </script> 
+
+		<script>
+		function callAJAX()
+		{
+	    	        var formData = new FormData($("#formSubmit")[0]);
+	    	        var data = Object.fromEntries(formData.entries());
+	    	     	console.log(data);
+	    	        addUser(data);
+		}		
+		function addUser(data) 
+		{
+			$.ajax({
+	            url: '/api/user',
+	            type: 'POST',
+	            contentType: 'application/json',
+	            data: JSON.stringify(data),
+	            dataType: 'json',
+	            success: function (result) {
+	            	alert("Thành công");
+	            	window.location.href = "/register?message=insert_success";
+	            },
+	            error: function (error) {
+	            	alert("Thất bại mời thử lại");
+	            	window.location.href = "/register?message=error_system";
+	            }
+	        });
+		}		
+		</script>
+</html>
