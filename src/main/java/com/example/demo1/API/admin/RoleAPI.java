@@ -1,6 +1,7 @@
 package com.example.demo1.API.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.demo1.dto.RoleDTO;
@@ -9,7 +10,7 @@ import com.example.demo1.service.IRoleService;
 import java.util.List;
 
 @RestController(value ="roleAPIOfAdmin")
-@RequestMapping("api/role")
+@RequestMapping(value = "api/role",produces = MediaType.APPLICATION_JSON_VALUE)
 public class RoleAPI 
 {
 	@Autowired
@@ -21,14 +22,14 @@ public class RoleAPI
 		return roleService.findAll();
 	}
 	@PostMapping
-	public RoleDTO create(@RequestBody RoleDTO RoleDTO) 
+	public RoleDTO create(@RequestBody RoleDTO roleDTO)
 	{
-		return roleService.saveOrUpdate(RoleDTO);
+		return roleService.saveOrUpdate(roleDTO);
 	}
 	@PutMapping
-	public RoleDTO update(@RequestBody RoleDTO RoleDTO) 
+	public RoleDTO update(@RequestBody RoleDTO roleDTO)
 	{
-		return roleService.saveOrUpdate(RoleDTO);
+		return roleService.saveOrUpdate(roleDTO);
 	}
 	@DeleteMapping
 	public void delete(@RequestBody long[] ids) 

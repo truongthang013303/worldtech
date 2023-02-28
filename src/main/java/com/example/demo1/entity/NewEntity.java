@@ -10,7 +10,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "new")
 public class NewEntity extends BaseEntity {
-	
+//	@Column(name = "status")
+//	private Integer status;
 	@Column(name = "title")
 	private String title;
 	
@@ -66,4 +67,12 @@ public class NewEntity extends BaseEntity {
 	public void setCategory(CategoryEntity category) {
 		this.category = category;
 	}
+
+/*	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}*/
 }

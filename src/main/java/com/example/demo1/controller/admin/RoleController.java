@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.example.demo1.service.IPrivilegeService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,8 @@ public class RoleController
 {
 	@Autowired
 	private IRoleService roleService;
+	@Autowired
+	private IPrivilegeService privilegeService;
 	@Autowired
 	private MessageUtil messageUtil;
 	@RequestMapping(value = {"/quantri/role/danhsach","/quantri/role"}, method = RequestMethod.GET)
@@ -82,6 +85,7 @@ public class RoleController
 			model.setAlert(message.get("alert"));
 		}
 		mav.addObject("model", model);
+		mav.addObject("privileges", privilegeService.findAll());
 		return mav;
 	}
 }

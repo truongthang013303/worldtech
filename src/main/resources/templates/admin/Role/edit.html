@@ -28,11 +28,11 @@ layout:decorate="~{/admin/adminLayout.html}" >
 					<input type="hidden" th:field="*{id}" id="roleId" />
 
 <!--					phan quyen-->
-					<th:block th:each="role: ${roles}">
+					<th:block th:each="privilege: ${privileges}">
 						<div class="form-group">
 							<label class="col-sm-3 control-label no-padding-right"></label>
 							<div class="col-sm-9">
-								<input type="checkbox" th:field="*{roleCode}" th:value="${role.code}" class="col-sm-1"> [[${role.name}]]
+								<input type="checkbox" th:field="*{privilegeCode}" th:value="${privilege.code}" class="col-sm-1"> [[${privilege.name}]]
 							</div>
 						</div>
 					</th:block>
@@ -82,16 +82,19 @@ $("#formSubmit").validate({
 		{
 		    	        var formData = new FormData($("#formSubmit")[0]);	       
 		    	        var data = Object.fromEntries(formData.entries()); //data{}
+		    	        data.privilegeCode = formData.getAll("privilegeCode");
 		    	     	var id = $('#roleId').val();
 		    		    if (id == "")
 		    		    {
 		    		    	console.log("add");
-		    		    	console.log(data);
+		    		    	//console.log(data);
+		    		    	//console.log(JSON.stringify(data));
 		    		    	add(data);
 		    		    } else
 		    		    {
 		    		    	console.log("edit");
-		    		    	console.log(data);
+		    		    	//console.log(data);
+		    		    	//console.log(JSON.stringify(data));
 		    		    	update(data);
 		    		    }
 		}
@@ -104,12 +107,16 @@ $("#formSubmit").validate({
 		            data: JSON.stringify(data),
 		            dataType: 'json',
 		            success: function (result) {
-		            	alert("Thành công");
-		            	window.location.href = "/quantri/role/chinhsua?id=" +result.id+ "&message=insert_success";
+		            	console.log('Ket qua tra ve cua api');
+		            	console.log(result);
+		            	swal('Thêm thành công');
+		            	//alert("Thành công");
+		            	//window.location.href = "/quantri/role/chinhsua?id=" +result.id+ "&message=insert_success";
 		            },
 		            error: function (error) {
 		            	alert("Thất bại mời thử lại");
-		            	window.location.href = "/quantri/role/chinhsua?message=error_system";	
+		            	window.location.reload();
+		            	//window.location.href = "/quantri/role/chinhsua?message=error_system";
 		            }
 		        });
 			}			
@@ -122,14 +129,16 @@ $("#formSubmit").validate({
 		            data: JSON.stringify(data),
 		            dataType: 'json',
 		            success: function (result) {
-		            	
-		            	alert("Thành công");
-		            	window.location.href = "/quantri/role/chinhsua?id=" +result.id+ "&message=insert_success";
+		            	//alert("Thành công");
+		            	swal('Cập nhập thành công');
+		            	window.location.reload();
+		            	//window.location.href = "/quantri/role/chinhsua?id=" +result.id+ "&message=insert_success";
 		            	
 		            },
 		            error: function (error) {		            	
 		            	alert("Thất bại mời thử lại");
-		            	window.location.href = "/quantri/role/chinhsua?message=error_system";
+		            	window.location.reload();
+		            	//window.location.href = "/quantri/role/chinhsua?message=error_system";
 		            }
 		        });
 			}			

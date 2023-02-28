@@ -63,6 +63,7 @@ public class NewService implements INewService {
 				dto.setCreatedBy(entity.getCreatedBy());
 				dto.setModifiedDate(entity.getModifiedDate());
 				dto.setModifiedBy(entity.getModifiedBy());
+				dto.setCategoryCode(entity.getCategory().getCode());
 				return dto;
 			}
 		});
@@ -117,6 +118,7 @@ public class NewService implements INewService {
 				dto.setCreatedBy(entity.getCreatedBy());
 				dto.setModifiedDate(entity.getModifiedDate());
 				dto.setModifiedBy(entity.getModifiedBy());
+				dto.setCategoryCode(entity.getCategory().getCode());
 				return dto;
 			}
 		});

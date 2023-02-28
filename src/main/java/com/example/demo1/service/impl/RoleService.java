@@ -61,8 +61,8 @@ public class RoleService implements IRoleService
 		RoleEntity roleEntity = new RoleEntity();		
 		if(dto.getId()!=null) 
 		{
-			RoleEntity oldUser = roleRepository.findOneById(dto.getId());
-			roleEntity = roleConverter.toEntity(oldUser,dto);	
+			RoleEntity oldRole = roleRepository.findOneById(dto.getId());
+			roleEntity = roleConverter.toEntity(oldRole,dto);
 		}
 		else if(roleRepository.existsByCode(dto.getCode())==false) //roleRepository.findExistByCode(dto.getCode())==0
 		{
