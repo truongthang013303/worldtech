@@ -5,14 +5,10 @@ import com.example.demo1.repository.NewRepository;
 import com.example.demo1.service.ICategoryService;
 import com.example.demo1.service.ICommonService;
 import com.example.demo1.service.IUserService;
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
-
-import java.lang.reflect.Array;
 import java.util.Arrays;
-import java.util.List;
 
 @Service
 public class CommonService implements ICommonService {
