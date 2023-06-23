@@ -18,6 +18,17 @@
 	</properties>
 	<dependencies>
 		<dependency>
+			<groupId>org.apache.systemds</groupId>
+			<artifactId>systemds</artifactId>
+			<version>2.1.0</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jdk.tools</artifactId>
+					<groupId>jdk.tools</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.mahout</groupId>
 			<artifactId>mahout-integration</artifactId>
 			<version>0.13.0</version>
@@ -39,6 +50,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 		    <groupId>nz.net.ultraq.thymeleaf</groupId>
@@ -106,25 +123,7 @@
 			<version>1.18.24</version>
 			<scope>provided</scope>
 		</dependency>
-	    
-<!-- 	    <dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-logging</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-log4j2</artifactId>
-		</dependency> -->
-	        
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -133,5 +132,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>
