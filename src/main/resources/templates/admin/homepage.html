@@ -2,42 +2,319 @@
 <html  xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 layout:decorate="~{/admin/adminLayout.html}" >
 <head>
-<title>Admin</title>
+<title>Dashboard</title>
 </head>
 <body>
 	<div class="page-content" layout:fragment="content">
 		<div class="row">
 			<div class="col-xs-12 text-center" style="font-size: 30px">
-			Homepage
+			Dashboard Page
 			</div>
 		</div>
+		<div class="space-12"></div>
 		<div class="row">
-					<div class="col-xs-4"></div>
-					<div class="col-xs-4">
-						<div class="table-responsive">
-						<div style="height: 30px"></div>
-							<table class="table table-bordered">
-								<thead>
-									<tr>
-										<!-- <th>ID</th> -->
-										<th>Thể loại</th>
-										<th>Số lượng bài viết</th>
-									</tr>
-								</thead>
-								<tbody>
-										<tr th:each="item: ${map}">
-											<!-- <td>[[${item.key.id}]]</td> -->
-											<td th:each="element: ${item.key}">
-												<span>[[${element.name}]]</span>/
-												<a th:href="@{/quantri(catecode=${element.code}, cateid=${element.id})}">[[${element.code}]]</a>
-											</td>
-											<td th:text="${item.value}">Số lượng</td>
-										</tr>
-								</tbody>
-							</table>
-						</div>
+			<div id="inforContainer" class="infobox-container">
+
+			</div>
+
+		</div>
+		<div class="space-24"></div>
+		<div class="row">
+					<div class="col-sm-4"></div>
+					<div class="col-sm-4">
+							<div class="widget-box">
+								<div class="widget-header widget-header-flat widget-header-small">
+									<h5 class="widget-title">
+										<i class="ace-icon fa fa-signal"></i>
+										Tỷ lệ các bài viết theo danh mục
+									</h5>
+
+									<div class="widget-toolbar no-border">
+										<div class="inline dropdown-hover"></div>
+									</div>
+								</div>
+
+								<div class="widget-body">
+									<div class="widget-main">
+										<canvas id="myChart"></canvas>
+									</div><!-- /.widget-main -->
+								</div><!-- /.widget-body -->
+							</div><!-- /.widget-box -->
 					</div>
-				</div>
+					<div class="col-sm-4"></div>
+		</div>
+<script>
+	/* có thể sử dụng id của category vd: 1,2,3,4... để random ra color tương ứng không cần lưu vào db*/
+	//Lấy random color cho slice pie của pieChart
+	function getArrayRandomColor(len, ids) {
+		var randomColors = [];
+		for (let i = 0; i < len; i++) {
+			randomColors.push('#' + Math.floor(Math.random() * 16777215).toString(16));/* Math.random() kq: 0->1 vd:0.55 */
+			//randomColors.push('#' + ids[i]*16777215.toString(16)); 
+		}
+		return randomColors;
+	}
+	//Lấy random màu cho fontColor labels
+	function getArrayRandomLabelsFontColor(len, ids) {
+		var randomColors = [];
+		for (let i = 0; i < len; i++) {
+			randomColors.push('#ffffff');
+		}
+		return randomColors;
+	}
+
+	//Vẽ piechart: nhận vào phần tử canvas muốn vẽ và data:labels, values tương ứng
+	function drawPieChart(canvas, data) {
+		new Chart(canvas, {
+			type: 'pie',
+			data: {
+				labels: data.map(a => a.label),
+				datasets: [{
+					data: data.map(a => a.value),
+					backgroundColor: getArrayRandomColor(data.length, data.map(a => a.id))
+				}]
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: true,
+				plugins: {
+					labels: {
+						render: 'percentage',
+						fontColor: getArrayRandomLabelsFontColor(data.length, data.map(a => a.id)),
+						precision: 2
+					}
+				},
+			}
+		});
+	}
+	//Vẽ pieChart cho danh mục với dữ liệu lấy về từ commonAPI
+	function drawPieChartForCategoryUsingCommonAPI(canvas, data) {
+		let dataConvert = [];
+		for (let cate of data.category.categories) {
+			dataConvert.push({ id: cate.id, label: cate.name, value: cate.postCount, code: cate.code });
+			/* [{id:1, label:'Giai tri', value: 5, code:'Giai-tri'},{},...] */
+		}
+		drawPieChart(canvas, dataConvert);
+	}
+
+	//Vẽ pieChart cho bài viết với dữ liệu lấy về từ commonAPI
+	function drawPieChartForPostUsingCommonAPI(data) {
+		let inforboxChild;
+		let dataConvert = [];
+		let percentTemp;
+		for (let props in data.news) {
+			percentTemp = Math.round( (data.news[props] / data.news['totalNews']) * 100);
+			dataConvert.push({ name: props, value: data.news[props], percent: percentTemp });
+		}
+
+		$.each(dataConvert, function (i, item) {
+			console.log(item);
+			inforboxChild += '<div class="infobox infobox-blue2">';
+			inforboxChild += '<div class="infobox-progress">';
+			inforboxChild += '<div class="easy-pie-chart percentage" data-percent="' + item.percent + '" data-size="46" style="height: 46px; width: 46px; line-height: 45px;">';
+			inforboxChild += '<span class="percent">' + item.percent + ' %</span>';
+			inforboxChild += '<canvas style="height: 46px; width: 46px;" width="57" height="57"></canvas></div>';
+			inforboxChild += '</div>';
+
+			inforboxChild += '<div class="infobox-data">';
+			inforboxChild += '<span class="infobox-text">' + item.name + '</span>';
+
+			inforboxChild += '<div class="infobox-content">';
+			inforboxChild += '<span class="bigger-110">' + item.value + '</span>';
+			inforboxChild += '</div>';
+			inforboxChild += '</div>';
+			inforboxChild += '</div>';
+
+		});
+/* 		//return HTMLElement cant using .html() just working with jquery object
+		console.log($(".infobox-container")[0]);
+		console.log($("#inforContainer")); */
+		$("#inforContainer").html(inforboxChild);
+	}
+
+
+	function drawEverEasyPieChart(data) {
+		let inforboxChild;
+		$.each(data, function (i, item) {
+			console.log(item);
+			inforboxChild += '<div id="" class="infobox infobox-blue2">';
+			inforboxChild += '<div class="infobox-progress">';
+			inforboxChild += '<div class="easy-pie-chart percentage" data-percent="' + item.percent + '" data-size="46" style="height: 46px; width: 46px; line-height: 45px;">';
+			inforboxChild += '<span class="percent">' + item.percent + ' %</span>';
+			inforboxChild += '<canvas style="height: 46px; width: 46px;" width="57" height="57"></canvas></div>';
+			inforboxChild += '</div>';
+
+			inforboxChild += '<div class="infobox-data">';
+			inforboxChild += '<span class="infobox-text">' + item.name + '</span>';
+
+			inforboxChild += '<div class="infobox-content">';
+			inforboxChild += '<span class="bigger-110">' + item.value + '</span>';
+			inforboxChild += '</div>';
+			inforboxChild += '</div>';
+			inforboxChild += '</div>';
+
+		});
+		$("#inforContainer").html(inforboxChild);
+	}	
+</script>
+
+<script>
+	//Lấy dữ liệu thống kê về bài viết trong hệ thống
+	//Dữ liệu data trả về của hàm này là 1 mảng các obj [{ name: 'totalNews', value: 13, percent:100 },{},...]
+	function getDataDashBoardOfPosts() {
+		var dataOfPosts=[];
+		$.ajax({
+			async: false,
+			url: '/api/new/dashboard',
+			type: 'GET',
+			dataType: 'json',
+			success: function (result) {
+				console.log(result);
+				let total = result.totalNews;
+				var percentTemp;
+				for (var prop in result) {
+				//console.log('obj.'+prop+'='+result[prop]);
+				percentTemp = Math.round((result[prop]/total)*100);
+				dataOfPosts.push({name:prop, value:result[prop], percent:percentTemp});
+				}
+			},
+			error: function (error) {
+				alert("Thất bại mời thử lại");
+				console.log(error);
+			}
+		});
+		console.log(dataOfPosts);
+		return dataOfPosts;
+	}
+	//Lấy dữ liệu về tên thể loại, số lượng bài viết theo từng thể loại, id để phục vụ cho vẽ pieChart bằng charjs 
+	//Dữ liệu data trả về của hàm này là 1 mảng các obj [{ id: 1, label: 'Gỉai Trí', value: 3 },{},...]
+	function getDataForPieChart() {
+		var data = [];
+		$.ajax({
+			async: false,
+			url: '/api/category/dashboard',
+			type: 'GET',
+			dataType: 'json',
+			success: function (result) {
+				//alert("Thành công");
+				//console.log(result);
+				for (let i = 0; i < result.length; i++) {
+					labelsServer.push(result[i].name);
+					dataServer.push(result[i].postCount);
+
+					data.push({ id: result[i].id, label: result[i].name, value: result[i].postCount });
+				}
+				//console.log(labelsServer);
+				//console.log(dataServer);
+
+				//console.log(labelsServer.map(a=>a.name));
+				//console.log(labelsServer.map(a=>a.postCount));
+
+				//console.log('in sucess api');
+				//console.log(data);
+
+				//drawPieChart(document.getElementById('myChart'), data);
+			},
+			error: function (error) {
+				alert("Thất bại mời thử lại");
+				console.log(error);
+			}
+		});
+
+		//console.log('before return');
+		//console.log(data);
+
+		return data;
+	}
+</script>
+
+<script>
+	//gọi commonAPI trả về toàn bộ dữ liệu cần thiết để báo cáo thống kê cho trang dashBoard
+	function getDataForDashBoardPage() {
+		let dataDashBoardFromServer;
+		$.ajax({
+			async: false,
+			url: '/api/dashboard',
+			type: 'GET',
+			dataType: 'json',
+			success: function (result) {
+				//console.log(result);
+				dataDashBoardFromServer=result;
+			},
+			error: function (error) {
+				swal("Thất bại mời thử lại");
+			}
+		});
+		//console.log(dataOfPosts);
+		return dataDashBoardFromServer;
+	}
+</script>
+
+<script>
+	var labelsServer = [];
+	var dataServer = [];
+
+	$(document).ready(function () {
+		//console.log('before call getDataForPieChart()');
+		//console.log(getDataForPieChart());
+
+/* 		drawPieChart(document.getElementById('myChart'), getDataForPieChart());
+		getDataDashBoardOfPosts(); */
+
+		let dataForDashBoardFromServer = getDataForDashBoardPage();
+		//console.log(dataForDashBoardFromServer);
+		drawPieChartForCategoryUsingCommonAPI(document.getElementById('myChart'), dataForDashBoardFromServer);
+
+/* 		let containerPostPie = $('.infobox-container');
+		drawPieChartForPostUsingCommonAPI(containerPostPie, dataForDashBoardFromServer); */
+
+/* 		var blocks = $('.infobox-container');
+		console.log(blocks);
+		console.log(blocks[0]);
+		console.log(blocks[0].children);
+		console.log(blocks[0][1]); */
+
+/* 		let canvas = $('div.infobox-progress > div.easy-pie-chart');
+		console.log(canvas);
+		$('div.infobox-progress > div.easy-pie-chart').attr('data-percent', 100); */
+
+		//$('#daDuyet').attr('data-percent', percentDaDuyet);
+
+		//drawPieChartForPostUsingCommonAPI(dataForDashBoardFromServer);
+
+
+		//Old Common Service: mmNews.addAttribute("totalNews", newService.getTotalItem());
+/* 		let dataConvert = [];
+		let percentTemp;
+		for (let props in dataForDashBoardFromServer.news) {
+			percentTemp = Math.round((dataForDashBoardFromServer.news[props] / dataForDashBoardFromServer.news['totalNews']) * 100);
+			dataConvert.push({ name: props, value: dataForDashBoardFromServer.news[props], percent: percentTemp });
+		}
+		for (let props in dataForDashBoardFromServer.user) {
+			percentTemp = Math.round((dataForDashBoardFromServer.user[props] / dataForDashBoardFromServer.user['totalUser']) * 100);
+			dataConvert.push({ name: props, value: dataForDashBoardFromServer.user[props], percent: percentTemp });
+		} */
+
+		//New CommonService
+		//mmNews.addAttribute("totalNews", new ModelMap().addAttribute("name","Tổng số bài viết").addAttribute("value",newService.getTotalItem()));
+		let dataConvert = [];
+		let percentTemp;
+		for (let props in dataForDashBoardFromServer.news) {
+			percentTemp = Math.round((dataForDashBoardFromServer.news[props].value / dataForDashBoardFromServer.news['totalNews'].value) * 100);
+			dataConvert.push({ name: dataForDashBoardFromServer.news[props].name, value: dataForDashBoardFromServer.news[props].value, percent: percentTemp });
+		}
+		for (let props in dataForDashBoardFromServer.user) {
+			percentTemp = Math.round((dataForDashBoardFromServer.user[props].value / dataForDashBoardFromServer.user['totalUser'].value) * 100);
+			dataConvert.push({ name: dataForDashBoardFromServer.user[props].name, value: dataForDashBoardFromServer.user[props].value, percent: percentTemp });
+		}
+		drawEverEasyPieChart(dataConvert);
+		console.log(dataConvert);
+
+/* 		//Cach 2: server tra ve object.easyPieChart chua day du thong tin de ve 1 easyPieChart chi viec lay ra
+		drawEverEasyPieChart(dataForDashBoardFromServer.easyPieChart); */
+
+	});
+</script>
 	</div>
 </body>
 </html>

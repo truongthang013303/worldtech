@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,6 +22,7 @@ import com.example.demo1.service.IRoleService;
 import com.example.demo1.utils.MessageUtil;
 
 @Controller(value = "roleControllerOfAdmin")
+@PreAuthorize("isAuthenticated() and hasRole('ROLE_ADMIN')")
 public class RoleController 
 {
 	@Autowired
@@ -31,9 +33,10 @@ public class RoleController
 	private MessageUtil messageUtil;
 	@RequestMapping(value = {"/quantri/role/danhsach","/quantri/role"}, method = RequestMethod.GET)
 	public ModelAndView roleListPage(@RequestParam(name = "page", required = false) Optional<Integer> page, 
-	@RequestParam(name = "limit", required = false) Optional<Integer> limit,@RequestParam(name="sort", required = false) String sort, HttpServletRequest request) 
+	@RequestParam(name = "limit", required = false) Optional<Integer> limit,@RequestParam(name="sort", required = false) String sort)
 	{
-		RoleDTO model = new RoleDTO();
+		ModelAndView mav = new ModelAndView("/admin/Role/danhsach");
+/*		RoleDTO model = new RoleDTO();
 		int pageCV=page.orElse(1);
 		int limitCV=limit.orElse(3);
 		model.setLimit(limitCV);
@@ -51,25 +54,18 @@ public class RoleController
 		}
 		Sort sort2 = Sort.by(sortField);
 		sort2 = sortDir.equals("ASC") ? sort2.ascending() : sort2.descending();
-		ModelAndView mav = new ModelAndView("/admin/Role/danhsach");
+
 		Pageable pageable = PageRequest.of(pageCV-1, limitCV, sort2);
 		model.setListResult(roleService.findAll(pageable));
-		String rqMess = request.getParameter("message");
-		if ( rqMess != null) 
-		{
-			Map<String, String> message = messageUtil.getMessage(rqMess);
-			model.setMessage(message.get("message"));
-			model.setAlert(message.get("alert"));
-		}
 		model.setTotalItem(roleService.getTotalItem());
 		model.setTotalPage((int) Math.ceil((double) model.getTotalItem() / model.getLimit()));
 		mav.addObject("sort",sort);
-		mav.addObject("model", model);
+		mav.addObject("model", model);*/
 		return mav;
 	}
 	
 	@RequestMapping(value = {"/quantri/role/chinhsua"}, method = RequestMethod.GET)
-	public ModelAndView showFormEdit(@RequestParam(name = "id", required = false) String id, HttpServletRequest request) 
+	public ModelAndView showFormEdit(@RequestParam(name = "id", required = false) String id)
 	{
 		RoleDTO model = new RoleDTO();
 		ModelAndView mav = new ModelAndView("/admin/Role/edit");
@@ -77,15 +73,15 @@ public class RoleController
 		{
 			model= roleService.findById(Long.parseLong(id));
 		}
-		String rqMess = request.getParameter("message");
-		if ( rqMess != null) 
-		{
-			Map<String, String> message = messageUtil.getMessage(rqMess);
-			model.setMessage(message.get("message"));
-			model.setAlert(message.get("alert"));
-		}
-		mav.addObject("model", model);
+		mav.addObject("model",model);
 		mav.addObject("privileges", privilegeService.findAll());
+		return mav;
+	}
+	@RequestMapping(value = {"/quantri/role/users"}, method = RequestMethod.GET)
+	public ModelAndView showUsersOfRole(@RequestParam(name = "roleid", required = true) String roleid)
+	{
+		ModelAndView mav = new ModelAndView("/admin/User/danhsach");
+		mav.addObject("roleid",roleid);
 		return mav;
 	}
 }

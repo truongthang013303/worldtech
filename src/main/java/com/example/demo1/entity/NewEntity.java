@@ -1,17 +1,26 @@
 package com.example.demo1.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import javafx.geometry.Pos;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "new")
+@NoArgsConstructor
+@Getter
+@Setter
 public class NewEntity extends BaseEntity {
-//	@Column(name = "status")
-//	private Integer status;
+	@Column(name = "status")
+	private Integer status;
 	@Column(name = "title")
 	private String title;
 	
@@ -24,51 +33,48 @@ public class NewEntity extends BaseEntity {
 	@Column(name = "content", columnDefinition = "TEXT")
 	private String content;
 	
+/*	@ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id")
+    private CategoryEntity category;*/
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private CategoryEntity category;
-	
-	public String getTitle() {
-		return title;
-	}
 
-	public void setTitle(String title) {
+	private String message;
+
+	@OneToMany(mappedBy = "post" , cascade = CascadeType.ALL)
+	private Collection<CommentEntity> comments;
+	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+	@OneToMany(mappedBy = "news", cascade = CascadeType.ALL)
+	Set<PostRating> ratings;
+
+	public NewEntity(Long id, String title) {
 		this.title = title;
+		super.setId(id);
 	}
 
-	public String getThumbnail() {
-		return thumbnail;
+	public boolean isNotHaveCategory(){
+		if(this.category==null)
+		{
+			return true;
+		}
+		return false;
 	}
-
-	public void setThumbnail(String thumbnail) {
-		this.thumbnail = thumbnail;
+	//sync bidriectional both sides
+	public void addRating(UserEntity userEntity, Integer rating){
+		PostRating postRating = new PostRating(PostRatingKey.builder()
+				.userId(userEntity.getId())
+				.postId(this.getId())
+				.build(), userEntity, this, rating);
+		ratings.add(postRating);
+		userEntity.getRatings().add(postRating);
 	}
-
-	public String getShortDescription() {
-		return shortDescription;
+	//sync bidriectional both sides
+	public void addRating(PostRating postRating){
+		ratings.add(postRating);
+		postRating.setNews(this);
 	}
-
-	public void setShortDescription(String shortDescription) {
-		this.shortDescription = shortDescription;
-	}
-
-	public String getContent() {
-		return content;
-	}
-
-	public void setContent(String content) {
-		this.content = content;
-	}
-
-	public CategoryEntity getCategory() {
-		return category;
-	}
-
-	public void setCategory(CategoryEntity category) {
-		this.category = category;
-	}
-
-/*	public Integer getStatus() {
+	/*	public Integer getStatus() {
 		return status;
 	}
 

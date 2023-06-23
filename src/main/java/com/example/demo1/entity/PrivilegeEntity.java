@@ -1,9 +1,8 @@
 package com.example.demo1.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.*;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
@@ -16,6 +15,7 @@ public class PrivilegeEntity extends BaseEntity{
     @Column(name = "code")
     private String code;
     @ManyToMany(mappedBy = "privileges")
+    @JsonIgnore
     private Collection<RoleEntity> roles=new LinkedHashSet<RoleEntity>();
 
     public String getName() {

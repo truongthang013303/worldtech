@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,6 +25,7 @@ import com.example.demo1.service.IUserService;
 import com.example.demo1.utils.MessageUtil;
 
 @Controller(value = "userControllerOfAdmin")
+@PreAuthorize("isAuthenticated() and hasRole('ROLE_ADMIN')")
 public class UserController 
 {
 	@Autowired
@@ -35,7 +39,8 @@ public class UserController
 	public ModelAndView userListPage(@RequestParam(name = "page", required = false) Optional<Integer> page, 
 	@RequestParam(name = "limit", required = false) Optional<Integer> limit,@RequestParam(name="sort", required = false) String sort, HttpServletRequest request) 
 	{
-		UserDTO model = new UserDTO();
+		ModelAndView mav = new ModelAndView("/admin/User/danhsach");
+/*		UserDTO model = new UserDTO();
 		int pageCV=page.orElse(1);
 		int limitCV=limit.orElse(3);
 		model.setLimit(limitCV);
@@ -53,7 +58,7 @@ public class UserController
 		}
 		Sort sort2 = Sort.by(sortField);
 		sort2 = sortDir.equals("ASC") ? sort2.ascending() : sort2.descending();
-		ModelAndView mav = new ModelAndView("/admin/User/danhsach");
+
 		Pageable pageable = PageRequest.of(pageCV-1, limitCV, sort2);
 		model.setListResult(userService.findAll(pageable));
 		String rqMess = request.getParameter("message");
@@ -66,7 +71,7 @@ public class UserController
 		model.setTotalItem(userService.getTotalItem());
 		model.setTotalPage((int) Math.ceil((double) model.getTotalItem() / model.getLimit()));
 		mav.addObject("sort",sort);
-		mav.addObject("model", model);
+		mav.addObject("model", model);*/
 		return mav;
 	}
 	
@@ -89,5 +94,11 @@ public class UserController
 		mav.addObject("model", model);
 		mav.addObject("roles", roleService.findAll());
 		return mav;
+	}
+	@RequestMapping(value = {"/rui"}, method = RequestMethod.GET)
+	public String retrieveUserInformation(){
+		Object o = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return "";
 	}
 }

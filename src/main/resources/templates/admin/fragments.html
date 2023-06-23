@@ -1,152 +1,249 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
-	<head >
+
+<head>
 	<th:block th:fragment="admin_header">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 		<meta charset="UTF-8" />
 		<meta name="description" content="overview &amp; stats" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-		
-		<link rel="stylesheet" th:href="@{/global/admin/assets/css/bootstrap.min.css}" />		
-		<link rel="stylesheet" th:href="@{/global/admin/assets/font-awesome/4.5.0/css/font-awesome.min.css}" />		
-		<link rel="stylesheet" th:href="@{/global/admin/assets/css/admin_style.css}" />
+		<!-- Favicon-->
+		<link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}" />
+		<link rel="stylesheet" th:href="@{/global/admin/assets/css/bootstrap.min.css}" />
+		<link rel="stylesheet" th:href="@{/global/admin/assets/font-awesome/4.5.0/css/font-awesome.min.css}" />
 		<link rel="stylesheet" th:href="@{/global/admin/assets/css/ace.min.css}" class="ace-main-stylesheet" id="main-ace-style" />
-		<link rel="stylesheet" th:href="@{/global/admin/assets/css/ace-skins.min.css}" />
-		<link rel="stylesheet" th:href="@{/global/admin/assets/css/ace-rtl.min.css}" />
+
+<!-- 		<link rel="stylesheet" th:href="@{/global/admin/assets/css/ace-rtl.min.css}" />
+		<link rel="stylesheet" th:href="@{/global/admin/assets/css/ace-skins.min.css}" /> -->
+
 		<link rel="stylesheet" th:href="@{/global/sweetalert/sweetalert2.min.css}" />
-		
-		<script th:src="@{/global/admin/assets/js/ace-extra.min.js}"></script>
-		<script th:src="@{/global/admin/assets/js/jquery-2.1.4.min.js}"></script>			
- 		<script th:src="@{/global/jqueryvalidate/jquery.validate.min.js}"></script>
+
+
+<!-- 		<script th:src="@{/global/admin/assets/js/ace-extra.min.js}"></script> -->
+
+		<script th:src="@{/global/admin/assets/js/jquery-2.1.4.min.js}"></script>
+		<!-- Jquery validation -->
+		<script th:src="@{/global/jqueryvalidate/jquery.validate.min.js}"></script>
 		<script th:src="@{/global/jqueryvalidate/additional-methods.min.js}"></script>
-		
-<!-- 		<script th:src="@{/global/ckeditor/styles.js}"></script>
+		<!-- charJS -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/emn178/chartjs-plugin-labels/src/chartjs-plugin-labels.js"></script>
+		<!-- jquery dataTable -->
+		<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+		<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+		<script src="https://cdn.datatables.net/select/1.6.2/js/dataTables.select.min.js"></script>
+		<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+		<link rel="stylesheet" href="https://cdn.datatables.net/select/1.6.2/css/select.dataTables.min.css" />
+		<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css" />
+		<!-- momentJS -->
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+		<!-- jquery charCount -->
+		<script th:src="@{/global/JS/jquery.charCountPlugin.js}"></script>
+		<!-- CKEditor4 -->
+		<script src="//cdn.ckeditor.com/4.21.0/full/ckeditor.js"></script>
+
+		<!-- 		<script th:src="@{/global/ckeditor/styles.js}"></script>
 		
 		<link rel="stylesheet" th:href="@{/global/ckeditor/contents.css}" /> -->
-		
+
 	</th:block>
-	<title>Admin</title>
+	<title>Admin page</title>
 </head>
+
 <body>
-<!-- topNav -->
-<div id="navbar" class="navbar navbar-default ace-save-state" th:fragment="admin_topNav">
-    <div class="navbar-container ace-save-state" id="navbar-container">
-        <div class="navbar-header pull-left">
-            <a th:href="@{/quantri}" class="navbar-brand">
-                <small>
-                    <i class="fa fa-leaf"></i>
-                    Trang quản trị
-                </small>
-            </a>
-        </div>
-        <div class="navbar-buttons navbar-header pull-right collapse navbar-collapse" role="navigation">
-            <ul class="nav ace-nav">
-                <li class="light-blue dropdown-modal">
-                    <a class="dropdown-toggle" sec:authorize="isAuthenticated()" style="text-decoration: none;">
-                        Welcome: <span sec:authentication="name">Username</span>
-                    </a>                   
-                </li>
-				<li class="light-blue dropdown-modal">
-					<a th:href='@{/logout}'>
-						<i class="ace-icon fa fa-power-off"></i> Thoát
-					</a>
-				</li>
-			</ul>
-        </div>
-    </div>
-</div>
-<!-- topNav -->	
-    
-<!-- sideBar -->
-<div id="sidebar" class="sidebar responsive ace-save-state" th:fragment="admin_sideBar">
-    <script>
-        try{ace.settings.loadState('sidebar')}catch(e){}
-    </script>
-    <ul class="nav nav-list" >
-        <li>
-            <a href="#" class="dropdown-toggle" >
-                <i class="menu-icon fa fa-list"></i>
-                <span class="menu-text"></span>
-                <span style="font-size: 20px">Quản lý</span>
-            </a>
-            <b class="arrow"></b>
-            <style>.noneDecoration{text-decoration: none}</style>
-            <ul class="submenu">
-	                <li>
-	                    <a th:href="@{/quantri/baiviet/danhsach}" class="noneDecoration">
-	                        <i class="menu-icon fa fa-caret-right"></i>
-	                        Bài viết
-	                    </a>
-	                    <b class="arrow"></b>
-	                </li>
-	                 <li>
-	                    <a th:href="@{/quantri/theloai/danhsach}" class="noneDecoration">
-	                        <i class="menu-icon fa fa-caret-right"></i>
-	                        Thể loại
-	                    </a>
-	                    <b class="arrow"></b>
-	                </li>
-	                
-	                 <li>
-	                    <a th:href="@{/quantri/nguoidung}" class="noneDecoration">
-	                        <i class="menu-icon fa fa-caret-right"></i>
-	                        Người dùng
-	                    </a>
-	                    <b class="arrow"></b>
-	                </li>             
-	                <li>
-	                    <a th:href="@{/quantri/role}" class="noneDecoration">
-	                        <i class="menu-icon fa fa-caret-right"></i>
-	                      	Role
-	                    </a>
-	                    <b class="arrow"></b>
-	                </li>
-	                <li>
-	                    <a th:href="@{/finduser}" class="noneDecoration">
-	                        <i class="menu-icon fa fa-caret-right"></i>
-	                       Find User
-	                    </a>
-	                    <b class="arrow"></b>
-	                </li>          
-            </ul>
-        </li>
-    </ul>
-    <div class="sidebar-toggle sidebar-collapse">
-        <i class="ace-icon fa fa-angle-double-left ace-save-state" data-icon1="ace-icon fa fa-angle-double-left" data-icon2="ace-icon fa fa-angle-double-right"></i>
-    </div>
-</div>
-<!-- sideBar -->    
-    
-    
-<!-- footer -->
-<div class="footer" th:fragment="admin_footer">
-    <div class="footer-inner">
-        <div class="footer-content">
-						<span class="bigger-120">
-							<span class="blue bolder">Spring Framework</span>
-						</span>
-            &nbsp; &nbsp;
-            <span class="action-buttons">
-							<a href="#">
-								<i class="ace-icon fa fa-twitter-square light-blue bigger-150"></i>
-							</a>
+	<!-- topNav -->
+	<div id="navbar" class="navbar navbar-default ace-save-state" th:fragment="admin_topNav">
+		<div class="navbar-container ace-save-state" id="navbar-container">
 
-							<a href="#">
-								<i class="ace-icon fa fa-facebook-square text-primary bigger-150"></i>
-							</a>
+			<button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler" data-target="#sidebar">
+				<span class="sr-only">Toggle sidebar</span>
 
-							<a href="#">
-								<i class="ace-icon fa fa-rss-square orange bigger-150"></i>
-							</a>
-						</span>
-        </div>
-    </div>
-</div>
-<!-- footer -->
-		<div th:fragment="admin_js">
-			<script th:src="@{/global/admin/assets/js/bootstrap.min.js}"></script>
-			<script th:src="@{/global/admin/assets/js/ace.min.js}"></script>		
-			<script th:src="@{/global/sweetalert/sweetalert2.min.js}"></script> 
+				<span class="icon-bar"></span>
+
+				<span class="icon-bar"></span>
+
+				<span class="icon-bar"></span>
+			</button>
+
+			<div class="navbar-header pull-left">
+				<a th:href="@{/quantri}" class="navbar-brand">
+					<small>
+						<i class="fa fa-leaf"></i>
+						Trang quản trị
+					</small>
+				</a>
+			</div>
+
+			<!-- <div class="navbar-buttons navbar-header pull-right collapse navbar-collapse" role="navigation">
+				<ul class="nav ace-nav">
+					<li class="light-blue dropdown-modal">
+						<a class="dropdown-toggle" sec:authorize="isAuthenticated()" style="text-decoration: none;">
+							Welcome: <span sec:authentication="name">Username</span>
+						</a>
+					</li>
+					<li class="light-blue dropdown-modal">
+						<a class="dropdown-toggle" sec:authorize="isAuthenticated() and hasRole('ROLE_ADMIN')"
+							style="text-decoration: none;">
+							Welcome ADMIN: <span sec:authentication="name">Username</span>
+						</a>
+					</li>
+					<li class="light-blue dropdown-modal">
+						<a class="dropdown-toggle" style="text-decoration: none;">
+							AUTHORITIES: <span sec:authentication="principal.authorities">[ROLE_DEFAULT, AUTHORITY
+								DEFAULT]</span>
+						</a>
+					</li>
+
+					<li class="light-blue dropdown-modal">
+						<a th:href='@{/logout}'>
+							<i class="ace-icon fa fa-power-off"></i> Thoát
+						</a>
+					</li>
+				</ul>
+			</div> -->
+			<div class="navbar-buttons navbar-header pull-right collapse navbar-collapse" role="navigation">
+				<ul class="nav ace-nav">
+					<li class="light-blue dropdown-modal">
+						<a class="dropdown-toggle" sec:authorize="isAuthenticated()" style="text-decoration: none;">
+							Welcome: <span sec:authentication="name">Username</span>
+						</a>
+					</li>
+					<li class="light-blue dropdown-modal">
+						<a th:href='@{/}'>
+							Home page
+						</a>
+					</li>
+					<li class="light-blue dropdown-modal">
+						<a th:href='@{/logout}'>
+							<i class="ace-icon fa fa-power-off"></i> Thoát
+						</a>
+					</li>
+				</ul>
+			</div>
+
 		</div>
+	</div>
+	<!-- topNav -->
+
+	<!-- sideBar -->
+	<div id="sidebar" class="sidebar responsive ace-save-state" th:fragment="admin_sideBar">
+		<script>
+			try { ace.settings.loadState('sidebar') } catch (e) { }
+		</script>
+		<style>
+			.noneDecoration {
+				text-decoration: none
+			}
+		</style>
+		<ul class="nav nav-list" style="top: 0px;">
+			<li>
+				<a href="/quantri">
+					<i class="menu-icon fa fa-tachometer"></i>
+					<span class="menu-text">Dashboard</span>
+				</a>
+				<b class="arrow"></b>
+			</li>
+			<li>
+				<a sec:authorize="isAuthenticated() and hasRole('ROLE_ADMIN') OR hasAuthority('VIEW_POST') OR hasAuthority('VIEW_SELF_POST') OR hasAuthority('PUBLISH_POST') OR hasAuthority('UPDATE_POST') OR hasAuthority('UPDATE_SELF_POST')OR hasAuthority('CREATE_POST')  OR hasAuthority('DELETE_POST')"
+					th:href="@{/quantri/baiviet/danhsach}" class="noneDecoration">
+					<i class="menu-icon fa fa-list"></i>
+					<span class="menu-text">Bài viết</span>
+				</a>
+				<b class="arrow"></b>
+			</li>
+			<li>
+				<a th:href="@{/quantri/theloai/danhsach}" class="noneDecoration" sec:authorize="isAuthenticated() and hasRole('ROLE_ADMIN') OR hasAuthority('VIEW_CATEGORY')">
+					<i class="menu-icon fa fa-list"></i>
+					<span class="menu-text">Danh mục</span>
+				</a>
+				<b class="arrow"></b>
+			</li>
+
+			<li>
+				<a th:href="@{/quantri/nguoidung}" class="noneDecoration" sec:authorize="isAuthenticated() and hasRole('ROLE_ADMIN') OR hasAuthority('VIEW_USER')">
+					<i class="menu-icon fa fa-list"></i>
+					<span class="menu-text">Người dùng</span>
+				</a>
+				<b class="arrow"></b>
+			</li>
+			<li>
+				<a th:href="@{/quantri/role}" class="noneDecoration" sec:authorize="isAuthenticated() and hasRole('ROLE_ADMIN') OR hasAuthority('VIEW_ROLE')">
+					<i class="menu-icon fa fa-list"></i>
+					<span class="menu-text">Vai trò</span>
+				</a>
+				<b class="arrow"></b>
+			</li>
+			<li>
+				<a th:href="@{/quantri/privilege}" class="noneDecoration" sec:authorize="isAuthenticated() and hasRole('ROLE_ADMIN') OR hasAuthority('VIEW_PRIVILEGE')">
+					<i class="menu-icon fa fa-list"></i>
+					<span class="menu-text">Đặc quyền</span>
+				</a>
+				<b class="arrow"></b>
+			</li>
+			<li>
+				<a th:href="@{/quantri/comment}" class="noneDecoration" sec:authorize="isAuthenticated() and hasRole('ROLE_ADMIN') OR hasAuthority('VIEW_COMMENT')">
+					<i class="menu-icon fa fa-list"></i>
+					<span class="menu-text">Bình luận</span>
+				</a>
+				<b class="arrow"></b>
+			</li>
+		</ul>
+		<div class="sidebar-toggle sidebar-collapse">
+			<i class="ace-icon fa fa-angle-double-left ace-save-state" data-icon1="ace-icon fa fa-angle-double-left"
+				data-icon2="ace-icon fa fa-angle-double-right"></i>
+		</div>
+	</div>
+	<!-- sideBar -->
+
+
+	<!-- footer -->
+	<div class="footer" th:fragment="admin_footer">
+		<div class="footer-inner">
+			<div class="footer-content">
+				<span class="bigger-120">
+					<span class="blue bolder">Spring Framework</span>
+				</span>
+				&nbsp; &nbsp;
+				<span class="action-buttons">
+					<a href="#">
+						<i class="ace-icon fa fa-twitter-square light-blue bigger-150"></i>
+					</a>
+
+					<a href="#">
+						<i class="ace-icon fa fa-facebook-square text-primary bigger-150"></i>
+					</a>
+
+					<a href="#">
+						<i class="ace-icon fa fa-rss-square orange bigger-150"></i>
+					</a>
+				</span>
+			</div>
+		</div>
+	</div>
+	<!-- footer -->
+
+	<!-- JS files-->
+	<div th:fragment="admin_js">
+		<script th:src="@{/global/admin/assets/js/bootstrap.min.js}"></script>
+		<script th:src="@{/global/sweetalert/sweetalert2.min.js}"></script>
+
+
+<!-- 		<script th:src="@{/global/admin/assets/js/jquery-ui.custom.min.js}"></script>
+		<script th:src="@{/global/admin/assets/js/jquery.ui.touch-punch.min.js}"></script>
+		<script th:src="@{/global/admin/assets/js/jquery.sparkline.index.min.js}"></script> -->
+		<script th:src="@{/global/admin/assets/js/jquery.flot.min.js}"></script>
+		<script th:src="@{/global/admin/assets/js/jquery.flot.pie.min.js}"></script>
+		<script th:src="@{/global/admin/assets/js/jquery.flot.resize.min.js}"></script>
+
+		<script th:src="@{/global/admin/assets/js/jquery.easypiechart.min.js}"></script>
+		<!-- ace scripts -->
+		<script th:src="@{/global/admin/assets/js/ace-elements.min.js}"></script>
+		<script th:src="@{/global/admin/assets/js/ace.min.js}"></script>
+		<!-- myScript -->
+		<script th:src="@{/global/JS/commonJS.js}"></script>
+		<!-- twbsPagination -->
+		<script th:src="@{/global/JS/jquery.twbsPagination.min.js}"></script>
+	</div>
 </body>
+
 </html>

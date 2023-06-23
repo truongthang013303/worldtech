@@ -1,15 +1,23 @@
 package com.example.demo1.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "category")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class CategoryEntity extends BaseEntity {
 
 	@Column(name = "name")
@@ -18,30 +26,7 @@ public class CategoryEntity extends BaseEntity {
 	@Column(name = "code")
 	private String code;
 
-	@OneToMany(mappedBy = "category")
-	private List<NewEntity> news = new ArrayList<>();
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public List<NewEntity> getNews() {
-		return news;
-	}
-
-	public void setNews(List<NewEntity> news) {
-		this.news = news;
-	}
+	@OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JsonIgnore
+	private Collection<NewEntity> news;
 }

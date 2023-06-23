@@ -81,6 +81,7 @@ $("#formSubmit").validate({
 		    	        var data = Object.fromEntries(formData.entries()); //data{}
 		    	     	var id = $('#categoryId').val();
 		    	     	console.log(id);
+						console.log(data);
 		    		    if (id == "")
 		    		    {
 		    		    	console.log("add");
@@ -103,11 +104,11 @@ $("#formSubmit").validate({
 		            dataType: 'json',
 		            success: function (result) {
 		            	alert("Thành công");
-		            	window.location.href = "/quantri/theloai/chinhsua?id="+result.id+"&message=insert_success";
+		            	//window.location.href = "/quantri/theloai/chinhsua?id="+result.id+"&message=insert_success";
 		            },
 		            error: function (error) {
 		            	alert("Thất bại mời thử lại");
-		            	window.location.href = "/quantri/theloai/chinhsua?message=error_system";           	
+		            	//window.location.href = "/quantri/theloai/chinhsua?message=error_system";           	
 		            }
 		        });
 			}			
@@ -123,11 +124,11 @@ $("#formSubmit").validate({
 		            	//console.log(result);
 		            	//console.log(JSON.stringify(result));
 		            	alert("Thành công");
-		            	window.location.href = "/quantri/theloai/chinhsua?id="+result.id+"&message=insert_success";
+		            	//window.location.href = "/quantri/theloai/chinhsua?id="+result.id+"&message=insert_success";
 		            },
 		            error: function (error) {
 		            	alert("Thất bại mời thử lại");
-		            	window.location.href = "/quantri/theloai/chinhsua?message=error_system";
+		            	//window.location.href = "/quantri/theloai/chinhsua?message=error_system";
 		            }	            
 		        });
 			}			

@@ -9,9 +9,6 @@ layout:decorate="~{/admin/adminLayout.html}" >
 	<form th:action="@{/quantri/role/danhsach}" id="formSubmit" method="get">
 		<div class="row">
 			<div class="col-xs-12">
-				<div id="divAlert" th:if="${model.message!=null} " th:text="${model.message}" class ="alert" th:classappend="${#strings.length(model.message)>1} ? alert-+${model.alert} : alert">
-						<input type="hidden" name="alert" id="alert"/>
-				</div>
 				<div class="widget-box table-filter">
 					<div class="table-btn-controls">
 						<div class="pull-right tableTools-container">
@@ -36,81 +33,20 @@ layout:decorate="~{/admin/adminLayout.html}" >
 				</div>
 				<div class="row">
 					<div class="col-xs-12">
-						<div class="table-responsive">
-						<!-- <div th:text="${#dates.createNow()}"></div> -->
-						<div>
-							<select name="sort" id="sort">
-								<option value="createdDate-DESC">Mới nhất</option>
-								<option value="createdDate-ASC">Cũ nhất</option>
-								<option value="modifiedDate-DESC">Chỉnh sửa gần đây nhất</option>
-								<option th:value="${sort}" selected>[[${sort}]]</option>
-							</select>
-						</div>
-							<table class="table table-bordered">
-								<thead>
-									<tr>
-										<th><input type="checkbox" id="checkAll"></th>
-										<th>Name</th>
-										<th>Code</th>
-										<th>Thao tác</th>
-									</tr>
-								</thead>
-								<tbody>
-										<tr th:each="model, iState:${model.listResult}">
-											<td><input class="chk" type="checkbox" th:id="checkbox_+${model.id}" th:value="${model.id}"> </td>
-											<td th:text="${model.name}"></td>
-											<td th:text="${model.code}"></td>
-											<td><a th:href=" @{ /quantri/role/chinhsua (id=${model.id}) } ">Edit</a></td>
-										</tr>
-								</tbody>
-							</table>
-						<!-- Pagination -->
-						<div class="text-center">
-							<h4 th:text="'totalPages:'+${model.totalPage}"></h4>
-							<h4 th:text="'totalItems:'+${model.totalItem}"></h4>
-							<h4 th:text="'Current Page:'+${model.page}"></h4>
-							<h4 th:text="'Sort:'+${sort}"></h4>
-							<nav aria-label="Pagination">
-	                        <hr class="my-0" />
-	                        	<ul class="pagination justify-content-center my-4">
-									<li class="page-item"><a class="page-link" th:if="${model.page>1}" th:href="@{/quantri/role(page=1,limit=3,sort=${sort})}">First</a></li>
-									<li class="page-item"><span class="page-link" th:unless="${model.page>1}">First</span></li>
-									
-									<li class="page-item"><a class="page-link" href="#" tabindex="-1" aria-disabled="true" th:if="${model.page>1}" th:href="@{/quantri/role(page=${model.page-1},limit=3,sort=${sort})}">Newer</a></li>
-	
-									<th:block th:each="item, state:${#numbers.sequence(1,model.totalPage)}">
-										<li class="page-item" th:class="${item!=model.page}?'page-item':'page-item active'">
-											<a class="page-link" th:href="@{/quantri/role(page=${item},limit=3,sort=${sort})}">[[${item}]]</a>
-										</li>
-									</th:block>
-									
-									<li class="page-item"><a class="page-link" th:if="${model.page<model.totalPage}" th:href="@{/quantri/role(page=${model.page+1},limit=3,sort=${sort})}">Older</a></li>
-									
-									<li class="page-item"><a class="page-link" th:if="${model.page<model.totalPage}" th:href="@{/quantri/role(page=${model.totalPage},limit=3,sort=${sort})}">Last</a></li>
-									<li class="page-item"><span class="page-link" th:unless="${model.page<model.totalPage}">Last</span></li>
-								</ul>
-							</nav>
-						</div>
-						<!-- Pagination -->
-						</div>
+						<table class="table table-striped hover" id="myTable" style="width:100%"></table>
 					</div>
 				</div>
 			</div>
 		</div>
 	</form>
-<input type="hidden" name="page" th:value="${model.page}" id="page" />
 		<script>
-        $("#checkAll").change(function(){
-            var status = $(this).is(":checked") ? true : false;
-            $(".chk").prop("checked",status);
-        });
  		$("#sort").change(function(){
         	$("#formSubmit").submit();
         });
 			function warningBeforeDelete() {
 					swal({
 					  title: "Xác nhận xóa",
-					  text: "Bạn có chắc chắn muốn xóa hay không",
+					  text: "Lưu ý việc xóa vai trò sẽ xóa tất cả người dùng có trong vai trò hiện tại, bạn có thể chuyển người dùng sang vai trò khác trước khi xóa",
 					  type: "warning",
 					  showCancelButton: true,
 					  confirmButtonClass: "btn-success",
@@ -118,7 +54,7 @@ layout:decorate="~{/admin/adminLayout.html}" >
 					  confirmButtonText: "Xác nhận",
 					  cancelButtonText: "Hủy bỏ",
 					}).then(function(isConfirm) {
-					  if (isConfirm) {
+					  if (isConfirm.value==true) {
 							var ids = $('tbody input[type=checkbox]:checked').map(function () {
 					            return $(this).val();
 					        }).get();
@@ -134,15 +70,114 @@ layout:decorate="~{/admin/adminLayout.html}" >
 		            contentType: 'application/json',
 		            data: JSON.stringify(data),
 		            success: function (result) {
-		                //window.location.href = "/quantri/baiviet/danhsach?page="+$('#page').val()+"&limit=2&message=delete_success";
-		                alert("Xóa thành công");
+		                swal({ title: 'Success', type: 'success', text:'Thêm bài viết thành công' });
+						table.draw();
 		            },
 		            error: function (error) {
-		            	//window.location.href = "/quantri/baiviet/danhsach?page="+$('#page').val()+"&limit=2&message=error_system";
-		            	alert("Xóa thất bại");
+		            	swal({ title: 'Error', type: 'error', text:error.responseText });
+						//window.location.reload();
 		            }
 		        });
 		    }
+
+			var table;
+			$(document).ready(function () {
+				//Column7: CreatedDate
+				let orderItem = [5, "desc"];
+				table = $('#myTable').DataTable({
+					processing: true,
+					serverSide: true,
+					lengthChange: false,
+					search: {
+						return: true,
+					},
+					language: {
+						searchPlaceholder: "Title"
+					},
+					searchDelay: 400,
+					select: true,
+					responsive: true,
+					order: [orderItem],
+					ajax: {
+						url: '/api/role',
+						type: 'GET',
+						dataType: 'json',
+						data: function (data) {
+							console.log(data);
+							//start bắt đầu từ element bao nhiêu vd page1:start=0, length=limit lấy bao nhiêu ele bắt đầu từ start, draw=số lần vẽ table; 
+							return { start: data.start, length: data.length, draw: data.draw, orderCol: data.columns[data.order[0].column].name, sortDir: data.order[0].dir, search: data.search.value }
+						}
+					}
+					,
+					columns: [
+						{
+							title: 'Id',
+							name: 'id',
+							data: 'id',
+							visible: false
+						},
+						{
+							title: '<input type="checkbox" id="checkAll">',
+							render: function (data, type, JsonResultRow, meta) {
+								return '<input class="chk" type="checkbox" id="checkbox_' + JsonResultRow.id + '" value="' + JsonResultRow.id + '">';
+							},
+							sortable: false,
+							searchable: false
+						},
+						{
+							title: 'Name',
+							name: 'name',
+							data: 'name'
+						},
+						{
+							title: 'Code',
+							name: 'code',
+							data: 'code',
+							searchable: false
+
+						},
+						{
+							title: 'Created By',
+							name: 'createdBy',
+							data: 'createdBy',
+							searchable: false
+						},
+						{
+							title: 'Created Date',
+							name: 'createdDate',
+							data: 'createdDate',
+							render: function (data, type, JsonResultRow, meta) {
+								return `<td class="sorting_1">${moment(JsonResultRow.createdDate).format('DD/MM/YYYY, HH:mm:ss')}</td>`;
+							},
+							searchable: false
+						},
+						{
+							title: 'Action',
+							name: 'action',
+							render: function (data, type, JsonResultRow, meta) {
+								return '<a href="/quantri/role/chinhsua?id=' + JsonResultRow.id + '">Edit</a>';
+							},
+							sortable: false,
+							searchable: false
+						},
+						{
+							title: 'Users',
+							name: 'users',
+							render: function (data, type, JsonResultRow, meta) {
+								return '<a href="/quantri/role/users?roleid=' + JsonResultRow.id + '">Users</a>';
+							},
+							sortable: false,
+							searchable: false
+						}
+					]
+				});
+
+				$("#checkAll").change(function () {
+					var status = $(this).is(":checked") ? true : false;
+					$(".chk").prop("checked", status);
+				});
+
+			});			
 		</script>		
 	</div>
 

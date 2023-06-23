@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{/Shared/_WorldLayout.html}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <!-- Title  -->
+    <title>World</title>
+</head>
+
+<body>
+    <!-- Preloader Start -->
+    <div id="preloader">
+        <div class="preload-content">
+            <div id="world-load"></div>
+        </div>
+    </div>
+    <!-- Preloader End -->
+    <!-- ***** Header Area Start ***** -->
+    <!-- ***** Header Area End ***** -->
+    <!-- ********** Hero Area Start ********** -->
+    <!-- ********** Hero Area End ********** -->
+    <div class="main-content-wrapper section-padding-100">
+        <div class="container">
+            <div class="row justify-content-center">
+                <!-- ============= Post Content Area Start ============= -->
+                <div class="col-12 col-lg-8">
+                    <div class="post-content-area mb-100" layout:fragment="content">
+                        <th:block th:if="${categoryCodeFromUser != null}">
+                        <input type="hidden" name="categoryCodeFromUser" id="categoryCodeFromUser" th:value="${categoryCodeFromUser}">
+                        </th:block>
+                        <!-- Catagory Area -->
+                        <div class="world-catagory-area">
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                <!-- <li class="title">Lifestyle</li> -->
+                                <li class="nav-item">
+                                    <!-- <a class="nav-link active" id="all" href="" aria-selected="true">All</a> -->
+                                    <a class="nav-link" id="all" href="" aria-selected="true">All</a>
+                                </li>
+                                <th:block th:each="item, iState:${categories}">
+                                    <li class="nav-item">
+                                        <!-- <a class="nav-link" th:id="${item.code}"  th:classappend="${categoryCodeFromUser}==${item.code} ? active : non-active" href="#world-tab-2">[[${item.name}]]</a> -->
+                                        <a class="nav-link" th:id="${item.code}"  href="#">[[${item.name}]]</a>
+                                    </li>
+                                </th:block>
+                            </ul>
+
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade show active" id="world-tab-1" role="tabpanel" aria-labelledby="tab1">
+                                </div>
+                                <div class="tab-pane fade" id="world-tab-2" role="tabpanel" aria-labelledby="tab2">
+                                    <!-- Single Blog Post -->
+                                </div>
+                                <div class="tab-pane fade" id="world-tab-3" role="tabpanel" aria-labelledby="tab3">
+                                    <!-- Single Blog Post -->
+                                </div>
+                                <div class="tab-pane fade" id="world-tab-4" role="tabpanel" aria-labelledby="tab4">
+                                    <!-- Single Blog Post -->
+                                </div>
+                                <div class="tab-pane fade" id="world-tab-5" role="tabpanel" aria-labelledby="tab5">
+                                    <!-- Single Blog Post -->
+                                </div>
+                                <!-- Load More btn -->
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="load-more-btn mt-50 text-center">
+                                            <a href="#" class="btn world-btn" id="categoryLoadMore">Load More</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- <input type="hidden" name="isLast" id="isLast" th:value="${isLast}"> -->
+                            </div>
+                        </div>
+
+                        <script>
+                            var nowCategoryCode='all';
+                            // mặc định đã luôn load ra trang đầu tiên số 1 của all, the thao, giai tri, the gioi...
+                            var page=1;
+                            function addClassAnchorTag(cateCode){
+                                $("ul#myTab").find("a.nav-link"+"#"+cateCode).addClass('active show');
+                            }
+                            function removeAllActiveAnchor(){
+                                $("ul#myTab").find("a.nav-link.active").removeClass('active show');
+                            }
+                            $(document).ready(function(){
+                                // if categoryCodeFromUser not exist == undefined
+                                var categoryCodeFromUser = $('#categoryCodeFromUser').val();
+                                if(categoryCodeFromUser!=''&&categoryCodeFromUser!=undefined){
+                                    nowCategoryCode = categoryCodeFromUser;
+                                }
+                                callAjaxWhenClickCategory(1, nowCategoryCode);
+                                //Chuyển sang page 1 của thể loại bất kỳ lúc này cateCode=... và page=1
+                                //event khi click vào từng category
+                                $("ul#myTab li").click(function(e){
+                                e.preventDefault();
+                                let id =$(this).children("a:first").attr("id");
+                                nowCategoryCode=id;
+                                callAjaxWhenClickCategory(1, nowCategoryCode);
+                                page=1;
+                                });
+                            
+                                //Tải thêm các page: 2,3,4,5...n theo từng thể loại, thợp đặc biệt cateCode='all' => không có thể loại load page:2, 3, 4, 5...n của tất cả bài viết
+                                $("#categoryLoadMore").click(function(){
+                                page++;
+                                callAjaxWhenClickLoadMore(page, nowCategoryCode);
+                                });
+                            });
+                            
+                            function callAjaxWhenClickLoadMore(page=1, cateCode)
+                            {
+                                var url = '/api/new/page?page=';
+                                url += page;
+                                if (cateCode != undefined && cateCode != '' && cateCode !='all') {
+                                    url += '&&cateCode=';
+                                    url += cateCode;
+                                }
+                                  var strNew="";
+                                      $.ajax({
+                                            url: url,
+                                            type: 'GET',
+                                            success: function (data) {
+                                                //console.log(data);
+                                                if(data.last==true)
+                                                {
+                                                $('#categoryLoadMore').hide();
+                                                }else{
+                                                $('#categoryLoadMore').show();
+                                                }
+                                                $.each(data.content, function(i, item){
+                                                strNew+='<div class="single-blog-post post-style-4 d-flex align-items-center wow fadeInUpBig" data-wow-delay="0.1s">';
+                                                // <!-- Post Thumbnail -->
+                                                strNew+='<div class="post-thumbnail">';
+                                                    strNew+='<img src="/images/'+item.thumbnail+'" alt="">';
+                                                strNew+='</div>';
+                                                // <!-- Post Content -->
+                                                strNew+='<div class="post-content">';
+                                                    strNew+='<a href="/baiviet/'+item.id+'" class="headline">';
+                                                        strNew+='<h5>'+item.title+'</h5>';
+                                                    strNew+='</a>';
+                                                    strNew+='<p>'+item.shortDescription+'</p>';
+                                                    //<!-- Post Meta -->
+                                                    strNew+='<div class="post-meta">';
+                                                        strNew+='<p><a href="#" class="post-author">'+item.createdBy+'</a> on <a href="#" class="post-date">'+moment(item.createdDate).format('HH:mm DD-MM-yyyy')+'</a></p>';
+                                                    strNew+='</div>';
+                                                strNew+='</div>';
+                                            strNew+='</div>';
+                                                });
+                                                $("#world-tab-1").append(strNew);
+                                            },
+                                            error: function () {
+                                                alert("Error");
+                                            }
+                                      });
+                            }
+                            
+                            function callAjaxWhenClickCategory(page=1, cateCode='all')
+                            {
+                                removeAllActiveAnchor();
+                                addClassAnchorTag(cateCode);
+                                var url = '/api/new/page?page=';// /api/new/page?page=1
+                                url += page;
+                                if (cateCode != undefined && cateCode != '' && cateCode !='all') {
+                                    url += '&cateCode=';
+                                    url += cateCode;// /api/new/page?page=1&cateCode=mobile
+                                }
+                                  var strNew="";
+                                      $.ajax({
+                                            url: url,
+                                            type: 'GET',
+                                            success: function (data) {
+                                                if(data.last==true)
+                                                {
+                                                $('#categoryLoadMore').hide();
+                                                }else{
+                                                $('#categoryLoadMore').show();
+                                                }
+                                                if (data.content.length!=0) {
+                                                    $.each(data.content, function (i, item) {
+                                                        strNew += '<div class="single-blog-post post-style-4 d-flex align-items-center wow fadeInUpBig" data-wow-delay="0.1s">';
+                                                        // <!-- Post Thumbnail -->
+                                                        strNew += '<div class="post-thumbnail">';
+                                                        strNew += '<img src="/images/' + item.thumbnail + '" alt="">';
+                                                        strNew += '</div>';
+                                                        // <!-- Post Content -->
+                                                        strNew += '<div class="post-content">';
+                                                        strNew += '<a href="/baiviet/' + item.id + '" class="headline">';
+                                                        strNew += '<h5>' + item.title + '</h5>';
+                                                        strNew += '</a>';
+                                                        strNew += '<p>' + item.shortDescription + '</p>';
+                                                        //<!-- Post Meta -->
+                                                        strNew += '<div class="post-meta">';
+                                                        strNew += '<p><a href="#" class="post-author">' + item.createdBy + '</a> on <a href="#" class="post-date">' + moment(item.createdDate).format('HH:mm DD-MM-yyyy') + '</a></p>';
+                                                        strNew += '</div>';
+                                                        strNew += '</div>';
+                                                        strNew += '</div>';
+                                                    });
+                                                    $("#world-tab-1").html(strNew);
+                                                }else{
+                                                    $("#world-tab-1").html(`<p style="text-align:center;">Category: ${nowCategoryCode} is Empty content</p>`);
+                                                }
+                                            },
+                                            error: function (error) {
+                                                console.log(error);
+                                            }
+                                      });
+                            }
+                            </script>
+
+                    </div>
+                </div>
+
+                <!-- ========== Sidebar Area ========== -->
+            </div>
+        </div>
+    </div>
+    <!-- ***** Footer Area Start ***** -->
+    <!-- ***** Footer Area End ***** -->
+    <!-- jQuery (Necessary for All JavaScript Plugins) -->
+    <!-- Popper js -->
+    <!-- Bootstrap js -->
+    <!-- Plugins js -->
+    <!-- Active js -->
+</body>
+</html>

@@ -1,27 +1,31 @@
 package com.example.demo1.controller.web;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.security.Principal;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
+import com.example.demo1.dto.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.example.demo1.dto.NewDTO;
 import com.example.demo1.dto.UserDTO;
 import com.example.demo1.service.ICategoryService;
 import com.example.demo1.service.INewService;
-import com.example.demo1.utils.MessageUtil;
-import org.springframework.web.servlet.View;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.validation.constraints.NotBlank;
 
 @Controller(value = "homeControllerOfWeb")
 public class HomeController 
@@ -30,134 +34,134 @@ public class HomeController
 	private INewService newService;
 	@Autowired
 	private ICategoryService categoryService;
-	@Autowired
-	private MessageUtil messageUtil;
-	
-//	@RequestMapping(value = "/", method = RequestMethod.GET)
-//	public String indexPageRedirect()
-//	{
-//		return "redirect:/home";
-//	}
-	
+//	@Autowired
+//	private MessageUtil messageUtil;
+
 	@RequestMapping(value = "/403", method = RequestMethod.GET)
 	public String pageNotFound()
 	{
 		return "403";
 	}
-	
-	@RequestMapping(value = {"/home","/",""}, method = RequestMethod.GET)
-	public ModelAndView homePage(@RequestParam(name = "page", required = false) Optional<Integer> page,
-			@RequestParam(name = "limit", required = false) Optional<Integer> limit,@RequestParam(name="sort", required = false) String sort)
+
+	@RequestMapping(value = {"/category/{code}","/category"}, method = RequestMethod.GET)
+	public ModelAndView newsSortByCate(@PathVariable(name = "code", required = false) String cateCode)
 	{
-		NewDTO model = new NewDTO();
-		ModelAndView mav = new ModelAndView("/web/home");	
-		model.setListResult(newService.findAll(PageRequest.of(page.orElse(0),limit.orElse(2))));
-		model.setPage(page.orElse(0));
-		model.setTotalPage((int) Math.ceil((double) newService.getTotalItem() / limit.orElse(2)));
+		ModelAndView mav = new ModelAndView("/web/Home/category");
+		mav.addObject("categoryCodeFromUser",cateCode);
 		mav.addObject("categories",categoryService.findAll());
-		mav.addObject("model",model);
 		return mav;
 	}
-	
-	@RequestMapping(value = "/category/{code}", method = RequestMethod.GET)
-	public ModelAndView newsSortByCate(@PathVariable(name = "code", required = false) String code, @RequestParam(name = "page", required = false) Optional<Integer> page,
-			@RequestParam(name = "limit", required = false) Optional<Integer> limit,@RequestParam(name="sort", required = false) String sort) 
+
+	@RequestMapping(value ="/baiviet/{id}", method = RequestMethod.GET)
+	public ModelAndView newDetailWorld(@PathVariable(name = "id", required = true) long id, HttpServletRequest request, HttpServletResponse response, Authentication authentication)
 	{
-		ModelAndView mav = new ModelAndView("/web/home");
-		NewDTO model = new NewDTO();
-		
-		int pageCV=page.orElse(1);
-		int limitCV=limit.orElse(4);
-		model.setLimit(limitCV);
-		model.setPage(pageCV);
-		String sortField="";
-		String sortDir="";
-		if(sort!=null) 
-		{
-			sortField = StringUtils.substringBefore(sort, "-");
-			sortDir = StringUtils.substringAfter(sort, "-");
-		}else {
-			sortField="createdDate";
-			sortDir="DESC";
-			sort=sortField+"-"+sortDir;
+		ModelAndView mav = new ModelAndView("/web/Home/single-blog");
+		//status=1[da duyet]
+		NewDTO model =  newService.findByIdAndStatus(id, 1);
+		if(model==null){
+			mav.setViewName("error/404");
+			return mav;
 		}
-		Sort sort2 = Sort.by(sortField);
-		sort2 = sortDir.equals("ASC") ? sort2.ascending() : sort2.descending();
-		Pageable pageable = PageRequest.of(pageCV-1, limitCV, sort2);
-		List<NewDTO> listNewDTO = newService.findAllByCategoryCode(code, pageable);		
-		model.setListResult(listNewDTO);				
-		model.setTotalItem(listNewDTO.size());
-		model.setTotalPage((int) Math.ceil((double) model.getTotalItem() / model.getLimit()));
-		
-		mav.addObject("model", model);
-		mav.addObject("sortCategory",sort);
-		mav.addObject("category",code);
-		mav.addObject("categories",categoryService.findAll());
-		return mav;
-	}
-	
-	@RequestMapping(value = "/baiviet/{id}", method = RequestMethod.GET)
-	public ModelAndView newDetail(@PathVariable(name = "id", required = false) long id) 
-	{
-		ModelAndView mav = new ModelAndView("/web/newDetail");
-		NewDTO model =  newService.findById(id);		
+		if(authentication==null)
+		{
+			model.setRatings(null);
+		}else{
+			AppUser appUser = (AppUser)authentication.getPrincipal();
+			model.setRatings(model.getRatings().stream().filter(rating->rating.getUser().getId()==appUser.getId()).collect(Collectors.toSet()));
+		}
 		mav.addObject("model",model);
-		mav.addObject("categories",categoryService.findAll());
+		mav.addObject("appUser",SecurityContextHolder.getContext().getAuthentication().getName());
+		if(request.getUserPrincipal()==null){
+			/*Authentication authentication1 = SecurityContextHolder.getContext().getAuthentication();
+			System.out.println(authentication1);*/
+			Cookie cookieUsername = new Cookie("username","anony");
+			cookieUsername.setPath("/");
+			cookieUsername.setMaxAge(0);
+			response.addCookie(cookieUsername);
+
+			Cookie cookieJSESSIONID = new Cookie("JSESSIONID","anony");
+			cookieJSESSIONID.setPath("/");
+			cookieJSESSIONID.setMaxAge(0);
+			response.addCookie(cookieJSESSIONID);
+		}
+/*		HttpSession session = request.getSession(false);
+		if(session!=null){
+			Cookie cookie = new Cookie("username","anony");
+			cookie.setPath("/");
+			AppUser appUser = (AppUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			cookie.setValue(appUser.getUsername());
+			response.addCookie(cookie);
+		}*/
+
+/*		SecurityContext securityContextHolder = SecurityContextHolder.getContext();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object o = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		System.out.println(securityContextHolder);
+		System.out.println(authentication);
+		System.out.println(o);*/
+
+
+		//mav.addObject("categories",categoryService.findAll());
 		return mav;
 	}
 	
 	@RequestMapping(value = "/search", method = RequestMethod.GET)
-	public ModelAndView search(@RequestParam(name = "keyword", required = false) String keyword) 
+	public ModelAndView search(@RequestParam(name = "keyword") @NotBlank Optional<String> keyword, Model model)
 	{
-		NewDTO model = new NewDTO();
-		ModelAndView mav = new ModelAndView("/web/home");
-		List<NewDTO> listNewSearch =  newService.findByTitleContaining(keyword);
-		model.setListResult(listNewSearch);
-		mav.addObject("model",model);
-		mav.addObject("categories",categoryService.findAll());
-		return mav;
-	}
-	
-	@RequestMapping(value = "/register", method = RequestMethod.GET)
-	public ModelAndView regisPage(@RequestParam(name = "message",required = false) String rqMess) 
-	{
-		ModelAndView mav = new ModelAndView("/register");
-		UserDTO userDTO = new UserDTO();
-		//String rqMess = request.getParameter("message");
-		if ( rqMess != null) 
-		{
-			Map<String, String> message = messageUtil.getMessage(rqMess);
-			userDTO.setMessage(message.get("message"));	
-			userDTO.setAlert(message.get("alert"));
+		ModelAndView mav = new ModelAndView("/web/Home/search");
+		if(!keyword.isPresent()){
+			return mav;
 		}
-		mav.addObject("model", userDTO);
+		//Status always is 1 =[DADUYET]
+		mav.addObject("news",newService.findByTitleContainingAndStatus(keyword.get()));
 		return mav;
 	}
-	
+
+	@RequestMapping(value = "/accessdenied", method = RequestMethod.GET)
+	public String accessdinied()
+	{
+		return "accessdenied";
+	}
+
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public ModelAndView loginPage(@RequestParam(name = "error",required = false) String error) 
+	@ResponseBody
+	//Trong config spring security khi login failed se chay vao duong dan /login?error==true
+	public String loginPage(@RequestParam(name = "error", required = false) String error)
 	{
-		ModelAndView mav = new ModelAndView("/login");
-		if(error!=null)
+		if(error!=null&&error.equalsIgnoreCase("true"))
 		{
-			mav.addObject("error", error);
+			return "failed";
 		}
-		return mav;
+		return "successed";
 	}
-
-
-	@RequestMapping(value = "/abc", method = RequestMethod.GET)
-	public ModelAndView newLay()
-	{
-		ModelAndView mav = new ModelAndView("/web/Home/TestNewLay");
-		return mav;
-	}
-	@RequestMapping(value = "/world", method = RequestMethod.GET)
-	public ModelAndView world()
+	@RequestMapping(value = {"/home","/",""}, method = RequestMethod.GET)
+	public ModelAndView world(HttpServletResponse response, Principal principal, Authentication authentication)
 	{
 		ModelAndView mav = new ModelAndView("/web/Home/WorldHome");
 		mav.addObject("categories",categoryService.findAll());
-		mav.addObject("news", newService.findAll(PageRequest.of(0,4)));
+		//status=1 => da duyet
+		Page<NewDTO> news = newService.findByPage(1,PageRequest.of(0, 4, Sort.by(Sort.Direction.DESC, "createdDate")));
+		mav.addObject("news", news);
+		mav.addObject("isLast", news.isLast());
+		if(authentication!=null){
+			if(!authentication.getName().equals("anonymousUser")) {
+				AppUser appUser = (AppUser)authentication.getPrincipal();
+				if(appUser.getInterest()!=null) {
+					mav.addObject("forYou", newService.findAllByCategoryCodePage(appUser.getInterest().getCode(), 1, PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "createdDate"))));
+				}
+			}
+		}
+
+/*		Cookie cookie = new Cookie("username","anony");
+		cookie.setHttpOnly(true);
+		cookie.setPath("/");
+		if(!(SecurityContextHolder.getContext()).getAuthentication().getPrincipal().toString().equalsIgnoreCase("anonymousUser"))
+		{
+			AppUser appUser = (AppUser)(SecurityContextHolder.getContext()).getAuthentication().getPrincipal();
+			cookie.setValue(appUser.getUsername());
+		}
+		response.addCookie(cookie);*/
+
 		return mav;
 	}
 }

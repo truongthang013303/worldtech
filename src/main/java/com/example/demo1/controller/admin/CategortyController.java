@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,6 +22,7 @@ import com.example.demo1.service.ICategoryService;
 import com.example.demo1.utils.MessageUtil;
 
 @Controller(value = "categoryControllerOfAdmin")
+@PreAuthorize("isAuthenticated() and hasRole('ROLE_ADMIN')")
 public class CategortyController 
 {
 	@Autowired
@@ -32,14 +34,15 @@ public class CategortyController
 	public ModelAndView categoryListPage(@RequestParam(name = "page", required = false) Optional<Integer> page, 
 	@RequestParam(name = "limit", required = false) Optional<Integer> limit,@RequestParam(name="sort", required = false) String sort, HttpServletRequest request) 
 	{
-		CategoryDTO model = new CategoryDTO();
+		ModelAndView mav = new ModelAndView("/admin/Category/danhsach");
+/*		CategoryDTO model = new CategoryDTO();
 		int pageCV=page.orElse(1);
 		int limitCV=limit.orElse(3);
 		model.setLimit(limitCV);
 		model.setPage(pageCV);
 		String sortField="";
 		String sortDir="";
-		if(sort!=null) 
+		if(sort!=null)
 		{
 			sortField = StringUtils.substringBefore(sort, "-");
 			sortDir = StringUtils.substringAfter(sort, "-");
@@ -50,11 +53,11 @@ public class CategortyController
 		}
 		Sort sort2 = Sort.by(sortField);
 		sort2 = sortDir.equals("ASC") ? sort2.ascending() : sort2.descending();
-		ModelAndView mav = new ModelAndView("/admin/Category/danhsach");
+
 		Pageable pageable = PageRequest.of(pageCV-1, limitCV, sort2);
 		model.setListResult(categoryService.findAll(pageable));
 		String rqMess = request.getParameter("message");
-		if ( rqMess != null) 
+		if ( rqMess != null)
 		{
 			Map<String, String> message = messageUtil.getMessage(rqMess);
 			model.setMessage(message.get("message"));
@@ -63,7 +66,7 @@ public class CategortyController
 		model.setTotalItem(categoryService.getTotalItem());
 		model.setTotalPage((int) Math.ceil((double) model.getTotalItem() / model.getLimit()));
 		mav.addObject("sort",sort);
-		mav.addObject("model", model);
+		mav.addObject("model", model);*/
 		return mav;
 	}
 	
@@ -84,6 +87,13 @@ public class CategortyController
 			model.setAlert(message.get("alert"));
 		}
 		mav.addObject("model", model);
+		return mav;
+	}
+	@RequestMapping(value = {"/quantri/theloai/news"}, method = RequestMethod.GET)
+	public ModelAndView showFormEdit(@RequestParam(name = "categoryid", required = true) String categoryid)
+	{
+		ModelAndView mav = new ModelAndView("/admin/New/danhsach");
+		mav.addObject("categoryid",categoryid);
 		return mav;
 	}
 }

@@ -1,446 +1,263 @@
 <!DOCTYPE html>
-<html  xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{/Shared/_WorldLayout.html}" >
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{/Shared/_WorldLayout.html}">
 <head>
 </head>
 <body>
+    <div>
+        <div class="row justify-content-center">
+            <!-- ============= Post Content Area Start ============= -->
+            <div class="col-12 col-lg-8">
+                <div class="post-content-area mb-50" layout:fragment="content">
+                    <!-- Catagory Area -->
+                    <div class="world-catagory-area">
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="title">Don’t Miss</li>
+                            <li class="nav-item">
+                                <a class="nav-link active show" id="all" href="#world-tab-1">All</a>
+                            </li>
+                            <th:block th:each="item, iState:${categories}">
+                                <li class="nav-item">
+                                    <a class="nav-link" th:id="${item.code}" href="#world-tab-2">[[${item.name}]]</a>
+                                </li>
+                            </th:block>
+                        </ul>
 
-<div layout:fragment="content">
-    <div class="row justify-content-center">
-        <!-- ============= Post Content Area Start ============= -->
-        <div class="col-12 col-lg-8">
-            <div class="post-content-area mb-50">
-                <!-- Catagory Area -->
-                <div class="world-catagory-area">
-                    <ul class="nav nav-tabs" id="myTab" role="tablist">
-                        <li class="title">Don’t Miss</li>
-                        <li class="nav-item">
-                            <a class="nav-link active show" id="tab1" href="#world-tab-1">All</a>
-                        </li>
-                     <th:block th:each="item, iState:${categories}">
-                         <li class="nav-item">
-                             <a class="nav-link" th:id="${item.code}"  href="#world-tab-2">[[${item.name}]]</a>
-                         </li>
-                     </th:block>
-                    </ul>
+                        <div class="tab-content" id="myTabContent">
 
-                    <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="world-tab-1" role="tabpanel"
+                                aria-labelledby="tab1">
+                                <div class="row">
+                                    <div class="col-12 col-md-6">
+                                        <div class="world-catagory-slider owl-carousel wow fadeInUpBig"
+                                            data-wow-delay="0.1s">
 
-                        <div class="tab-pane fade show active" id="world-tab-1" role="tabpanel" aria-labelledby="tab1">
-                            <div class="row">
-                                <div class="col-12 col-md-6">
-                                    <div class="world-catagory-slider owl-carousel wow fadeInUpBig" data-wow-delay="0.1s">
+                                            <th:block th:each="item, iState:${news}">
+                                                <!-- Single Blog Post -->
+                                                <div class="single-blog-post">
+                                                    <!-- Post Thumbnail -->
+                                                    <div class="post-thumbnail">
+                                                        <img th:src="@{'/images/'+${item.thumbnail}}" alt="">
+                                                        <!-- Catagory -->
+                                                        <div class="post-cta"><a href="#">[[${item.categoryCode}]]</a>
+                                                        </div>
+                                                    </div>
+                                                    <!-- Post Content -->
+                                                    <div class="post-content">
+                                                        <a th:href="@{'/baiviet/'+${item.id}}" class="headline">
+                                                            <h5>[[${item.title}]]</h5>
+                                                        </a>
+                                                        <p>[[${item.shortDescription}]]</p>
+                                                        <!-- Post Meta -->
+                                                        <div class="post-meta">
+                                                            <p><a href="#" class="post-author">[[${item.createdBy}]]</a>
+                                                                on
+                                                                <!-- <a href="#"
+                                                                    class="post-date">[[${item.createdDate}]]</a> -->
+                                                                <a href="#"
+                                                                    class="post-date">[[${#dates.format(item.createdDate,
+                                                                    'HH:mm dd-MM-yyyy')}]]</a>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </th:block>
 
+                                        </div>
+                                    </div>
+                                    <!-- 4 news on the right hand -->
+                                    <div class="col-12 col-md-6" id="newsRightHand">
                                         <th:block th:each="item, iState:${news}">
                                             <!-- Single Blog Post -->
-                                            <div class="single-blog-post">
+                                            <div class="single-blog-post post-style-2 d-flex align-items-center wow fadeInUpBig"
+                                                data-wow-delay="0.1s" style="min-height:97px;">
                                                 <!-- Post Thumbnail -->
                                                 <div class="post-thumbnail">
                                                     <img th:src="@{'/images/'+${item.thumbnail}}" alt="">
-                                                    <!-- Catagory -->
-                                                    <div class="post-cta"><a href="#">[[${item.categoryCode}]]</a></div>
                                                 </div>
                                                 <!-- Post Content -->
                                                 <div class="post-content">
                                                     <a th:href="@{'/baiviet/'+${item.id}}" class="headline">
                                                         <h5>[[${item.title}]]</h5>
                                                     </a>
-                                                    <p>[[${item.shortDescription}]]</p>
                                                     <!-- Post Meta -->
                                                     <div class="post-meta">
-                                                        <p><a href="#" class="post-author">Katy Liu</a> on <a href="#" class="post-date">[[${item.createdDate}]]</a></p>
+                                                        <p><a href="#" class="post-author"
+                                                                th:text="*{item.createdBy}">Katy
+                                                                Liu</a> on <a href="#"
+                                                                class="post-date">[[${#dates.format(item.createdDate,
+                                                                'HH:mm dd-MM-yyyy')}]]</a>
+                                                        </p></a></p>
                                                     </div>
                                                 </div>
                                             </div>
                                         </th:block>
 
-                                    </div>
+                                    </div><!-- 4 news on the right hand END-->
                                 </div>
-                                <!-- 4 news on the right hand -->
-                                <div class="col-12 col-md-6" id="newsRightHand">
-                                    <th:block th:each="item, iState:${news}">
-                                    <!-- Single Blog Post -->
-                                    <div class="single-blog-post post-style-2 d-flex align-items-center wow fadeInUpBig" data-wow-delay="0.1s" style="min-height:97px;">
-                                        <!-- Post Thumbnail -->
-                                        <div class="post-thumbnail">
-                                            <img th:src="@{'/images/'+${item.thumbnail}}" alt="">
-                                        </div>
-                                        <!-- Post Content -->
-                                        <div class="post-content">
-                                            <a th:href="@{'/baiviet/'+${item.id}}" class="headline">
-                                                <h5>[[${item.title}]]</h5>
-                                            </a>
-                                            <!-- Post Meta -->
-                                            <div class="post-meta">
-                                                <p><a href="#" class="post-author">Katy Liu</a> on <a href="#" class="post-date">[[${item.createdDate}]]</a></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    </th:block>
-
-                                </div><!-- 4 news on the right hand END-->
                             </div>
                         </div>
                     </div>
+                    <!-- Catagory Area -->
                 </div>
-
-                <!-- Catagory Area -->
-
             </div>
+            <!-- ========== Sidebar Area ========== -->
         </div>
-
-        <!-- ========== Sidebar Area ========== -->
-        <div class="col-12 col-md-8 col-lg-4">
-            <div class="post-sidebar-area wow fadeInUpBig" data-wow-delay="0.2s">
-                <!-- Widget Area -->
-                <!-- Widget Area -->
-                <div class="sidebar-widget-area">
-                    <h5 class="title">Top Stories</h5>
-                    <div class="widget-content">
-                        <!-- Single Blog Post -->
-                        <div class="single-blog-post post-style-2 d-flex align-items-center widget-post">
-                            <!-- Post Thumbnail -->
-                            <div class="post-thumbnail">
-                                <img th:src="@{/global/World/img/blog-img/b11.jpg}" alt="">
-                            </div>
-                            <!-- Post Content -->
-                            <div class="post-content">
-                                <a href="#" class="headline">
-                                    <h5 class="mb-0">How Did van Gogh’s Turbulent Mind Depict One of the Most</h5>
-                                </a>
-                            </div>
-                        </div>
-                        <!-- Single Blog Post -->
-                        <div class="single-blog-post post-style-2 d-flex align-items-center widget-post">
-                            <!-- Post Thumbnail -->
-                            <div class="post-thumbnail">
-                                <img th:src="@{/global/World/img/blog-img/b13.jpg}" alt="">
-                            </div>
-                            <!-- Post Content -->
-                            <div class="post-content">
-                                <a href="#" class="headline">
-                                    <h5 class="mb-0">How Did van Gogh’s Turbulent Mind Depict One of the Most</h5>
-                                </a>
-                            </div>
-                        </div>
-                        <!-- Single Blog Post -->
-                        <div class="single-blog-post post-style-2 d-flex align-items-center widget-post">
-                            <!-- Post Thumbnail -->
-                            <div class="post-thumbnail">
-                                <img th:src="@{/global/World/img/blog-img/b14.jpg}" alt="">
-                            </div>
-                            <!-- Post Content -->
-                            <div class="post-content">
-                                <a href="#" class="headline">
-                                    <h5 class="mb-0">How Did van Gogh’s Turbulent Mind Depict One of the Most</h5>
-                                </a>
-                            </div>
-                        </div>
-                        <!-- Single Blog Post -->
-                        <div class="single-blog-post post-style-2 d-flex align-items-center widget-post">
-                            <!-- Post Thumbnail -->
-                            <div class="post-thumbnail">
-                                <img th:src="@{/global/World/img/blog-img/b10.jpg}" alt="">
-                            </div>
-                            <!-- Post Content -->
-                            <div class="post-content">
-                                <a href="#" class="headline">
-                                    <h5 class="mb-0">How Did van Gogh’s Turbulent Mind Depict One of the Most</h5>
-                                </a>
-                            </div>
-                        </div>
-                        <!-- Single Blog Post -->
-                        <div class="single-blog-post post-style-2 d-flex align-items-center widget-post">
-                            <!-- Post Thumbnail -->
-                            <div class="post-thumbnail">
-                                <img th:src="@{/global/World/img/blog-img/b12.jpg}" alt="">
-                            </div>
-                            <!-- Post Content -->
-                            <div class="post-content">
-                                <a href="#" class="headline">
-                                    <h5 class="mb-0">How Did van Gogh’s Turbulent Mind Depict One of the Most</h5>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Widget Area -->
-                <div class="sidebar-widget-area">
-                    <h5 class="title">Stay Connected</h5>
-                    <div class="widget-content">
-                        <div class="social-area d-flex justify-content-between">
-                            <a href="#"><i class="fa fa-facebook"></i></a>
-                            <a href="#"><i class="fa fa-twitter"></i></a>
-                            <a href="#"><i class="fa fa-pinterest"></i></a>
-                            <a href="#"><i class="fa fa-vimeo"></i></a>
-                            <a href="#"><i class="fa fa-instagram"></i></a>
-                            <a href="#"><i class="fa fa-google"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Widget Area -->
-
-            </div>
-        </div>
-    </div>
-    
-<!--Part2-->
-
-    <div class="row justify-content-center">
-        <!-- ========== Single Blog Post ========== -->
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="single-blog-post post-style-3 mt-50 wow fadeInUpBig" data-wow-delay="0.2s">
-                <!-- Post Thumbnail -->
-                <div class="post-thumbnail">
-                    <img th:src="@{/global/World/img/blog-img/b4.jpg}" alt="">
-                    <!-- Post Content -->
-                    <div class="post-content d-flex align-items-center justify-content-between">
-                        <!-- Catagory -->
-                        <div class="post-tag"><a href="#">travel</a></div>
-                        <!-- Headline -->
-                        <a href="#" class="headline">
-                            <h5>How Did van Gogh’s Turbulent Mind Depict One of the Most Complex Concepts in Physics?</h5>
-                        </a>
-                        <!-- Post Meta -->
-                        <div class="post-meta">
-                            <p><a href="#" class="post-author">Katy Liu</a> on <a href="#" class="post-date">Sep 29, 2017 at 9:48 am</a></p>
-                        </div>
-                    </div>
+        <!--Part2-->
+        <div class="row" th:if="${isLast}==false" layout:fragment="homeLoadMore">
+            <!-- Load More btn -->
+            <div class="col-12 col-lg-12 col-xs-12">
+                <div class="load-more-btn mt-50 text-center">
+                    <a href="#" class="btn world-btn" id="appendBut">Load More</a>
                 </div>
             </div>
         </div>
-        <!-- ========== Single Blog Post ========== -->
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="single-blog-post post-style-3 mt-50 wow fadeInUpBig" data-wow-delay="0.4s">
-                <!-- Post Thumbnail -->
-                <div class="post-thumbnail">
-                    <img th:src="@{/global/World/img/blog-img/b5.jpg}" alt="">
-                    <!-- Post Content -->
-                    <div class="post-content d-flex align-items-center justify-content-between">
-                        <!-- Catagory -->
-                        <div class="post-tag"><a href="#">travel</a></div>
-                        <!-- Headline -->
-                        <a href="#" class="headline">
-                            <h5>How Did van Gogh’s Turbulent Mind Depict One of the Most Complex Concepts in Physics?</h5>
-                        </a>
-                        <!-- Post Meta -->
-                        <div class="post-meta">
-                            <p><a href="#" class="post-author">Katy Liu</a> on <a href="#" class="post-date">Sep 29, 2017 at 9:48 am</a></p>
-                        </div>
-                    </div>
-                </div>
+        <!--Lastest Articles-->
+        <th:block layout:fragment="contentRow3">
+            <div class="title">
+                <h5>Latest Articles</h5>
             </div>
-        </div>
-        <!-- ========== Single Blog Post ========== -->
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="single-blog-post post-style-3 mt-50 wow fadeInUpBig" data-wow-delay="0.6s">
-                <!-- Post Thumbnail -->
-                <div class="post-thumbnail">
-                    <img th:src="@{/global/World/img/blog-img/b6.jpg}" alt="">
-                    <!-- Post Content -->
-                    <div class="post-content d-flex align-items-center justify-content-between">
-                        <!-- Catagory -->
-                        <div class="post-tag"><a href="#">travel</a></div>
-                        <!-- Headline -->
-                        <a href="#" class="headline">
-                            <h5>How Did van Gogh’s Turbulent Mind Depict One of the Most Complex Concepts in Physics?</h5>
-                        </a>
-                        <!-- Post Meta -->
-                        <div class="post-meta">
-                            <p><a href="#" class="post-author">Katy Liu</a> on <a href="#" class="post-date">Sep 29, 2017 at 9:48 am</a></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>    
-<!--Part2 End-->
+            <th:block th:each="item, iState:${news.content}">
 
-<!--Lastest Articles-->
-    <div class="world-latest-articles">
-        <div class="row">
-            <div class="col-12 col-lg-8" id="lastestArticles">
-                <div class="title">
-                    <h5>Latest Articles</h5>
-                </div>
-                <th:block th:each="item, iState:${news}">
-                <!-- Single Blog Post -->
-                <div class="single-blog-post post-style-4 d-flex align-items-center wow fadeInUpBig" data-wow-delay="0.2s">
-                    <!-- Post Thumbnail -->
+                <div class="single-blog-post post-style-4 d-flex align-items-center wow fadeInUpBig"
+                    data-wow-delay="0.2s">
+
                     <div class="post-thumbnail">
                         <img th:src="@{'/images/'+${item.thumbnail}}" alt="">
                     </div>
-                    <!-- Post Content -->
+
                     <div class="post-content">
                         <a th:href="@{'/baiviet/'+${item.id}}" class="headline">
                             <h5>[[${item.title}]]</h5>
                         </a>
                         <p>[[${item.shortDescription}]]</p>
-                        <!-- Post Meta -->
+
                         <div class="post-meta">
-                            <p><a href="#" class="post-author">Katy Liu</a> on <a href="#" class="post-date">[[${item.createdDate}]]</a></p>
+                            <p><a href="#" class="post-author" th:text="${item.createdBy}">Katy Liu</a> on <a href="#"
+                                    class="post-date">[[${#dates.format(item.createdDate, 'HH:mm dd-MM-yyyy')}]]</a></p>
                         </div>
                     </div>
                 </div>
-                </th:block>
-            </div>
+            </th:block>
 
-            <!-- ForYou -->
-            <div class="col-12 col-lg-4">
-                <div class="title">
-                    <h5>For You</h5>
-                </div>
-
-                <!-- Single Blog Post -->
-                <div class="single-blog-post wow fadeInUpBig" data-wow-delay="0.2s">
-                    <!-- Post Thumbnail -->
-                    <div class="post-thumbnail">
-                        <img th:src="@{/global/World/img/blog-img/b7.jpg}" alt="">
-                        <!-- Catagory -->
-                        <div class="post-cta"><a href="#">travel</a></div>
-                        <!-- Video Button -->
-                        <a href="https://www.youtube.com/watch?v=IhnqEwFSJRg" class="video-btn"><i class="fa fa-play"></i></a>
-                    </div>
-                    <!-- Post Content -->
-                    <div class="post-content">
-                        <a href="#" class="headline">
-                            <h5>How Did van Gogh’s Turbulent Mind Depict One of the Most Complex Concepts in Physics?</h5>
-                        </a>
-                        <p>How Did van Gogh’s Turbulent Mind Depict One of the Most Complex Concepts in...</p>
-                        <!-- Post Meta -->
-                        <div class="post-meta">
-                            <p><a href="#" class="post-author">Katy Liu</a> on <a href="#" class="post-date">Sep 29, 2017 at 9:48 am</a></p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Single Blog Post -->
-                <div class="single-blog-post wow fadeInUpBig" data-wow-delay="0.4s">
-                    <!-- Post Thumbnail -->
-                    <div class="post-thumbnail">
-                        <img th:src="@{/global/World/img/blog-img/b8.jpg}" alt="">
-                        <!-- Catagory -->
-                        <div class="post-cta"><a href="#">travel</a></div>
-                        <!-- Video Button -->
-                        <a href="https://www.youtube.com/watch?v=IhnqEwFSJRg" class="video-btn"><i class="fa fa-play"></i></a>
-                    </div>
-                    <!-- Post Content -->
-                    <div class="post-content">
-                        <a href="#" class="headline">
-                            <h5>How Did van Gogh’s Turbulent Mind Depict One of the Most Complex Concepts in Physics?</h5>
-                        </a>
-                        <p>How Did van Gogh’s Turbulent Mind Depict One of the Most Complex Concepts in...</p>
-                        <!-- Post Meta -->
-                        <div class="post-meta">
-                            <p><a href="#" class="post-author">Katy Liu</a> on <a href="#" class="post-date">Sep 29, 2017 at 9:48 am</a></p>
-                        </div>
-                    </div>
-                </div>
-
-            </div><!-- ForYou End -->
-        </div>
-    </div>
-<!--Lasttest Articles End-->
-<script>
-var page=0;
-$(document).ready(function(){
-    //Event click to category show the news
-    $("ul#myTab li").click(function(e){
-    e.preventDefault();
-    //alert("li");
-    let id =$(this).children("a:first").attr("id");
-    callAjaxWhenClickCategory(id);
-
-    });//end category click
-
-    $("#appendBut").click(function(){
-    page++;
-    callAjaxWhenClickLoadMore(page);
-    });
-});
-
-function callAjaxWhenClickCategory(id)
-{
-      var url='/api/new/page?page=0&&cateCode=';
-      url+=id;
-      console.log(url);
-      var str="";
-          $.ajax({
-                url: url,
-                type: 'GET',
-                success: function (data) {
-                    console.log(data);
-                    $.each(data.content, function(i, item){
-                    str+='<div class="single-blog-post post-style-2 d-flex align-items-center wow fadeInUpBig" data-wow-delay="0.1s" style="min-height:97px;">';
-                    // <!-- Post Thumbnail -->
-                    str+='<div class="post-thumbnail">';
-                        str+='<img src="images/'+item.thumbnail+'" alt="">';
-                    str+='</div>';
-                    // <!-- Post Content -->
-                    str+='<div class="post-content">';
-                        str+='<a href="/baiviet/'+item.id+'" class="headline">';
-                            str+='<h5>'+item.title+'</h5>';
-                        str+='</a>';
-                        //<!-- Post Meta -->
-                        str+='<div class="post-meta">';
-                            str+='<p><a href="#" class="post-author">Katy Liu</a> on <a href="#" class="post-date">'+item.createdDate+'</a></p>';
-                        str+='</div>';
-                    str+='</div>';
-                str+='</div>';
-                    });
-                    $("#newsRightHand").html(str);
-                },
-                error: function () {
-                    alert("Error");
+            <script>
+                function addClassAnchorTag(cateCode) {
+                    $("ul#myTab").find("a.nav-link" + "#" + cateCode).addClass('active show');
                 }
-          });
-}
+                function removeAllActiveAnchor() {
+                    $("ul#myTab").find("a.nav-link.active").removeClass('active show');
+                }
+                var page = 1;
 
-///////////////////////
-function callAjaxWhenClickLoadMore(page=1, cateCode)
-{
-      var url='/api/new/page?page=';
-      url+=page;
-      url+='&&cateCode=';
-      url+=cateCode;
-      console.log(url);
-      var strNew="";
-          $.ajax({
-                url: url,
-                type: 'GET',
-                success: function (data) {
-                    //console.log(data);
-                    if(data.last==true)
-                    {
-                    $('#appendBut').css('display', 'none');
+                $(document).ready(function () {
+
+                    //Event click to category show the news
+                    $("ul#myTab li").click(function (e) {
+                        e.preventDefault();
+                        let categoryCode = $(this).children("a:first").attr("id");
+                        callAjaxWhenClickCategory(categoryCode);
+                        page = 1;
+                    });
+
+                    $("#appendBut").click(function () {
+                        page++;
+                        callAjaxWhenClickLoadMore('all', page);
+                    });
+                });
+
+                function callAjaxWhenClickCategory(categoryCode='all') {
+                    removeAllActiveAnchor();
+                    addClassAnchorTag(categoryCode);
+                    var url = '/api/new/page?page=1';
+                    if (categoryCode != undefined && categoryCode != '' && categoryCode != 'all') {
+                        url += '&cateCode=';
+                        url += categoryCode;// /api/new/page?page=1&cateCode=mobile
                     }
-                    $.each(data.content, function(i, item){
-                    strNew+='<div class="single-blog-post post-style-4 d-flex align-items-center wow fadeInUpBig" data-wow-delay="0.1s">';
-                    // <!-- Post Thumbnail -->
-                    strNew+='<div class="post-thumbnail">';
-                        strNew+='<img src="images/'+item.thumbnail+'" alt="">';
-                    strNew+='</div>';
-                    // <!-- Post Content -->
-                    strNew+='<div class="post-content">';
-                        strNew+='<a href="/baiviet/'+item.id+'" class="headline">';
-                            strNew+='<h5>'+item.title+'</h5>';
-                        strNew+='</a>';
-                        strNew+='<p>'+item.shortDescription+'</p>';
-                        //<!-- Post Meta -->
-                        strNew+='<div class="post-meta">';
-                            strNew+='<p><a href="#" class="post-author">Katy Liu</a> on <a href="#" class="post-date">'+item.createdDate+'</a></p>';
-                        strNew+='</div>';
-                    strNew+='</div>';
-                strNew+='</div>';
+                    url += '&sort=createdDate';
+                    url += '&direction=DESC';
+                    var str = "";
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        success: function (data) {
+                            if (data.content.length != 0) {
+                                $.each(data.content, function (i, item) {
+                                    str += '<div class="single-blog-post post-style-2 d-flex align-items-center wow fadeInUpBig" data-wow-delay="0.1s" style="min-height:97px;">';
+                                    // <!-- Post Thumbnail -->
+                                    str += '<div class="post-thumbnail">';
+                                    str += '<img src="images/' + item.thumbnail + '" alt="">';
+                                    str += '</div>';
+                                    // <!-- Post Content -->
+                                    str += '<div class="post-content">';
+                                    str += '<a href="/baiviet/' + item.id + '" class="headline">';
+                                    str += '<h5>' + item.title + '</h5>';
+                                    str += '</a>';
+                                    //<!-- Post Meta -->
+                                    str += '<div class="post-meta">';
+                                    str += '<p><a href="#" class="post-author">' + item.createdBy + '</a> on <a href="#" class="post-date">' + moment(item.createdDate).format('HH:mm DD-MM-yyyy') + '</a></p>';
+                                    str += '</div>';
+                                    str += '</div>';
+                                    str += '</div>';
+                                });
+                                $("#newsRightHand").html(str);
+                            } else {
+                                $("#newsRightHand").html(`<p style="text-align:center;"> Empty content</p>`);
+                            }
+                        },
+                        error: function () {
+                            console.log("Error");
+                        }
                     });
-                    $("#lastestArticles").append(strNew);
-                },
-                error: function () {
-                    alert("Error");
                 }
-          });
-}
-</script>
-</div><!--End layout:fragment="content"-->
 
+                ///////////////////////
+                function callAjaxWhenClickLoadMore(cateCode='all', page = 1, sort='createdDate', direction='DESC') {
+                    var url = '/api/new/page?page=';
+                    url += page;
+                    if (cateCode != undefined && cateCode != '' && cateCode != 'all') {
+                        url += '&cateCode=';
+                        url += cateCode;
+                    }
+
+                    url += '&sort=createdDate';
+                    url += '&direction=DESC';
+                    var strNew = "";
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        success: function (data) {
+                            //console.log(data);
+                            if (data.last == true) {
+                                $('#appendBut').css('display', 'none');
+                            }
+                            $.each(data.content, function (i, item) {
+                                strNew += '<div class="single-blog-post post-style-4 d-flex align-items-center wow fadeInUpBig" data-wow-delay="0.1s">';
+                                // <!-- Post Thumbnail -->
+                                strNew += '<div class="post-thumbnail">';
+                                strNew += '<img src="images/' + item.thumbnail + '" alt="">';
+                                strNew += '</div>';
+                                // <!-- Post Content -->
+                                strNew += '<div class="post-content">';
+                                strNew += '<a href="/baiviet/' + item.id + '" class="headline">';
+                                strNew += '<h5>' + item.title + '</h5>';
+                                strNew += '</a>';
+                                strNew += '<p>' + item.shortDescription + '</p>';
+                                //<!-- Post Meta -->
+                                strNew += '<div class="post-meta">';
+                                strNew += '<p><a href="#" class="post-author">' + item.createdBy + '</a> on <a href="#" class="post-date">' + moment(item.createdDate).format('HH:mm DD-MM-yyyy') + '</a></p>';
+                                strNew += '</div>';
+                                strNew += '</div>';
+                                strNew += '</div>';
+                            });
+                            $("#lastestArticles").append(strNew);
+                        },
+                        error: function (e) {
+                           console.log(e);
+                        }
+                    });
+                }
+            </script>
+        </th:block>
+    </div>
 </body>
 </html>

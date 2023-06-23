@@ -24,6 +24,10 @@ public class RoleConverter {
 		Collection<String> privileges=new ArrayList<String>();
 		entity.getPrivileges().forEach(s->privileges.add(s.getCode()));
 		result.setPrivilegeCode(privileges);
+		result.setCreatedBy(entity.getCreatedBy());
+		result.setCreatedDate(entity.getCreatedDate());
+		result.setModifiedBy(entity.getModifiedBy());
+		result.setModifiedDate(entity.getModifiedDate());
 		return result;
 	}
 	

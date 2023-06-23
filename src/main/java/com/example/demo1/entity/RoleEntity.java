@@ -1,6 +1,8 @@
 package com.example.demo1.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.*;
 
 import javax.persistence.*;
@@ -15,7 +17,8 @@ public class RoleEntity extends BaseEntity {
 	@Column(name = "code")
 	private String code;
 
-	@ManyToMany(mappedBy = "roles")
+	@ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JsonIgnore
     private Collection<UserEntity> users;
 
 	@ManyToMany(fetch = FetchType.EAGER)

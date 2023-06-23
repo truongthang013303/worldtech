@@ -1,73 +1,66 @@
 package com.example.demo1.dto;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
+import com.example.demo1.entity.PostRating;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
+import java.util.Map;
+import java.util.Set;
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class NewDTO extends AbstractDTO<NewDTO> {
-	
+
+//	private Integer status;
+	//By default, Jackson will represent Java Enums as a simple String like CHODUYET, DADUYET...
+	private PostStatus status;
+	//Serialize to JSON when return by API: {...,postStatusClass: { postStatusCode: 0, postStatusName: "PostStatusClass-CHODUYET" },...}
+	//private PostStatusClass postStatusClass = new PostStatusClass(0);
 	@NotBlank
-	@Length(max = 95)
+	@NotNull
+	@Size(min = 10, max = 200, message
+			= "code must be between 10 and 200 characters")
 	private String title;
 	
-	@NotBlank
+//	@NotBlank
 	private String thumbnail;
 	//private String base64;
 	
-	@NotBlank
+//	@NotBlank
 	private String name;
 	
 	@NotBlank
-	@Length(max = 190)
+	@NotNull
+	@Size(min = 10, max = 200, message
+			= "code must be between 10 and 200 characters")
 	private String shortDescription;
 	
 	@NotBlank
+	@NotNull
 	private String content;
 		
 	@NotBlank
 	private String categoryCode;
+
+	private CategoryDTO category;
+
+	private String messageDenied;
 	/*
 	 * public String getBase64() { return base64; } public void setBase64(String
 	 * base64) { this.base64 = base64; }
 	 */
-	public NewDTO() 
-	{
+	private Set<PostRating> ratings;
+/*	public PostStatusClass getPostStatusClass() {
+		return postStatusClass;
 	}
-	
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getTitle() {
-		return title;
-	}
-	public void setTitle(String title) {
-		this.title = title;
-	}
-	public String getThumbnail() {
-		return thumbnail;
-	}
-	public void setThumbnail(String thumbnail) {
-		this.thumbnail = thumbnail;
-	}
-	public String getShortDescription() {
-		return shortDescription;
-	}
-	public void setShortDescription(String shortDescription) {
-		this.shortDescription = shortDescription;
-	}
-	public String getContent() {
-		return content;
-	}
-	public void setContent(String content) {
-		this.content = content;
-	}
-	public String getCategoryCode() {
-		return categoryCode;
-	}
-	public void setCategoryCode(String categoryCode) {
-		this.categoryCode = categoryCode;
-	}
+
+	public void setPostStatusClass(PostStatusClass postStatusClass) {
+		this.postStatusClass = postStatusClass;
+	}*/
 }

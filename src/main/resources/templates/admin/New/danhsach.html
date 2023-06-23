@@ -1,191 +1,224 @@
 <!DOCTYPE html>
-<html  xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-layout:decorate="~{/admin/adminLayout.html}" >
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{/admin/adminLayout.html}">
+
 <head>
-<title>Danh sách</title>
+	<title>Danh sách</title>
 </head>
+
 <body>
-	
 	<div class="page-content" layout:fragment="content">
-	<form th:action="@{/quantri/baiviet/danhsach}" id="formSubmit" method="get">
 		<div class="row">
-			<div class="col-xs-12">		
-				<div id="divAlert" th:if="${message!=null} " th:text="${message}" class ="alert" th:classappend="${#strings.length(message)>1} ? alert-+${alert} : alert">
-					 <input type="hidden" name="alert" id="alert"/>
-				</div>
-				<div id="divAlert" th:if="${model.message!=null} " th:text="${model.message}" class ="alert" th:classappend="${#strings.length(model.message)>1} ? alert-+${model.alert} : alert">
-					 <input type="hidden" name="alert" id="alert"/>
-				</div>	
+			<div class="col-xs-12">
 				<div class="widget-box table-filter">
 					<div class="table-btn-controls">
-						<div class="pull-right tableTools-container">
+						<div class="pull-left tableTools-container">
 							<div class="dt-buttons btn-overlap btn-group">
-							
-								<a flag="info"
+
+								<a sec:authorize="isAuthenticated() AND hasRole('ROLE_ADMIN') OR hasAuthority('CREATE_POST')" flag="info"
 									class="dt-button buttons-colvis btn btn-white btn-primary btn-bold"
-									data-toggle="tooltip" title='Thêm bài viết'
-									href='/quantri/baiviet/chinhsua'> <span> <i class="fa fa-plus-circle bigger-110 purple"></i> </span>Thêm
+									data-toggle="tooltip" title='Thêm bài viết' href='/quantri/baiviet/chinhsua'> <span>
+										<i class="fa fa-plus-circle bigger-110 purple"></i> </span>Thêm
 								</a>
-								
-								<button id="btnDelete" type="button"
-									onclick="warningBeforeDelete()"
+
+								<button sec:authorize="isAuthenticated() AND hasRole('ROLE_ADMIN') OR hasAuthority('DELETE_POST')" id="btnDelete"
+									type="button" onclick="warningBeforeDelete()"
 									class="dt-button buttons-html5 btn btn-white btn-primary btn-bold"
 									data-toggle="tooltip" title='Xóa bài viết'>
 									<span> <i class="fa fa-trash-o bigger-110 pink"></i></span>Xóa
 								</button>
-								
+
 							</div>
 						</div>
 					</div>
 				</div>
-				<div class="row">
-					<div class="col-xs-12">
-						<div class="table-responsive">
-						<!-- <div th:text="${#dates.createNow()}"></div> -->
-						<div>
-							<th:block th:unless="${catecode}">
-							<select name="sort" id="sort">
-								<!-- <option value="#" selected>---Sắp xếp theo---</option> -->
-								<option value="createdDate-DESC">Mới nhất</option>
-								<option value="createdDate-ASC">Cũ nhất</option>
-								<option value="modifiedDate-DESC">Chỉnh sửa gần đây nhất</option>
-								<option value="${sort}" selected>[[${sort}]]</option>
-							</select>
-							</th:block>
-						</div>
-						<div style="height: 30px"></div>
-<!-- 						<div>
-							<a th:href="@{/quantri/baiviet/danhsach?sort=modifiedDate-DESC}">Chỉnh sửa gần đây nhất</a>
-						</div> -->
-							<table class="table table-bordered">
-								<thead>
-									<tr>
-										<th><input type="checkbox" id="checkAll"></th>
-										<th>Thumbnail</th>
-										<th>Tên bài viết</th>
-										<th>Mô tả ngắn</th>
-										<th>Thao tác</th>
-									</tr>
-								</thead>
-								<tbody>
-										<tr th:each="model, iState:${model.listResult}">
-											<td><input class="chk" type="checkbox" th:id="checkbox_+${model.id}" th:value="${model.id}"> </td>
-											<td><img  th:src="@{'/images/'+ *{model.thumbnail}}" alt="Img..." id="image" name="image" width="100px" height="70px"/></td>
-											<td th:text="${model.title}"></td>
-											<td th:text="${model.shortDescription}"></td>
-											<td><a th:href=" @{ /quantri/baiviet/chinhsua (id=${model.id}) } ">Edit</a></td>
-										</tr>
-								</tbody>
-							</table>
-						<!-- Pagination -->
-						<div class="text-center">
-							<h4 th:text="'totalPages:'+${model.totalPage}"></h4>
-							<h4 th:text="'totalItems:'+${model.totalItem}"></h4>
-							<h4 th:text="'Current Page:'+${model.page}"></h4>
-							<h4 th:text="'Sort:'+${sort}"></h4>
-							<nav aria-label="Pagination">
-	                        <hr class="my-0" />
-	                        	<ul th:if="${catecode}" class="pagination justify-content-center my-4" >
-	                        			<th:block th:each="item, state:${#numbers.sequence(1,model.totalPage)}">
-	                        				<li class="page-item"><a th:href="@{/quantri/(catecode=${catecode}, cateid=${cateid}, page=${item},limit=2,sort=${sort})}" th:text="${item}" class="page-link"></a></li>
-	                        			</th:block>
-	                        	</ul>
-								<ul th:unless="${catecode}" class="pagination justify-content-center my-4">
-									<li class="page-item"><a th:if="${model.page>1}" th:href="@{/quantri/baiviet/danhsach(page=${1},limit=2)}">First</a></li>
-									<li class="page-item"><span th:unless="${model.page>1}" >First</span></li>
-									<li class="page-item"><a th:if="${model.page>1}" th:href="@{/quantri/baiviet/danhsach(page=${model.page-1},limit=2)}">Previous</a></li>
-									
-									<th:block th:if="${model.totalPage <= 10}">
-										<th:block th:each="item, state:${#numbers.sequence(1,model.totalPage)}">
-												<li  th:if="${item!=model.page}" class="page-item"><a th:href="@{/quantri/baiviet/danhsach(page=${item},limit=2,sort=${sort})}" th:text="${item}" class="page-link"></a></li>
-												<li  th:unless="${item!=model.page}" class="page-item active"><span th:href="@{/quantri/baiviet/danhsach(page=${item},limit=2)}" th:text="${item}"></span></li>
-										</th:block>
-									</th:block>
-									
-									<th:block th:if="${model.totalPage > 10}">
-											<th:block th:if="${model.page <=5 || model.page > model.totalPage-4}">
-												<li th:each="item, state:${#numbers.sequence(1,5)}" class="page-item">
-													<a th:href="@{/quantri/baiviet/danhsach(page=${item},limit=2,sort=${sort})}" class="page-link" th:text="${item}" ></a>
-												</li>
-												<li class="page-item"><a th:if="${item!=model.page}" th:href="@{/quantri/baiviet/danhsach(page=6,limit=2,sort=${sort})}" class="page-link">...</a></li>
-												<li th:each="item, state:${#numbers.sequence(model.totalPage-4,model.totalPage)}" class="page-item">
-													<a th:if="${item!=model.page}" th:href="@{/quantri/baiviet/danhsach(page=${item},limit=2,sort=${sort})}" class="page-link" th:text="${item}"></a>
-												</li>
-											</th:block>
-											
-											<th:block th:if="${model.page > 5 && model.page<model.totalPage-4}">
-													<li class="page-item"><a th:href="@{/quantri/baiviet/danhsach(page=${model.page-5},limit=2,sort=${sort})}" class="page-link">...</a></li>
-													<li th:each="item, state:${#numbers.sequence(model.page-4, model.page + 4)}" class="page-item">
-														<a th:class="${item!=model.page}?'page-item disable':'page-item'"  th:href="@{/quantri/baiviet/danhsach(page=${item},limit=2,sort=${sort})}" class="page-link" th:text="${item}"></a>
-													</li>
-													<li class="page-item"><a th:href="@{/quantri/baiviet/danhsach(page=${model.page+5},limit=2,sort=${sort})}" class="page-link">...</a></li>
-											</th:block>
-	
-									</th:block>
-									
-									<li class="page-item"><a th:if="${model.page<model.totalPage}" th:href="@{/quantri/baiviet/danhsach(page=${model.page+1},limit=2)}" class="page-link">Next</a></li>
-									<li class="page-item"><span th:unless="${model.page<model.totalPage}" >Next</span></li>
-									<li class="page-item"><a th:if="${model.page<model.totalPage}" th:href="@{/quantri/baiviet/danhsach(page=${model.totalPage},limit=2)}" class="page-link">Last</a></li>
-									<li class="page-item"><span th:unless="${model.page<model.totalPage}" >Last</span></li>
-								</ul>
-							</nav>
-						</div>
-						<!-- Pagination -->
-						</div>
-
-					</div>
-				</div>
 			</div>
 		</div>
-	</form>
-<input type="hidden" name="page" th:value="${model.page}" id="page" />
+		<div class="row">
+			<div class="col-xs-12">
+				<table class="table table-striped hover" id="myTable" style="width:100%"></table>
+			</div>
+			<input type="hidden" th:if="${categoryid}" th:value="${categoryid}" id="categoryid" name="categoryid">
+			<input type="hidden" th:unless="${categoryid}" value="0" id="categoryid" name="categoryid">
+			
+		</div>
 		<script>
-        $("#checkAll").change(function(){
-            var status = $(this).is(":checked") ? true : false;
-            $(".chk").prop("checked",status);
-        });
- 		$("#sort").change(function(){
-        	$("#formSubmit").submit();
-        });
 			function warningBeforeDelete() {
-					swal({
-					  title: "Xác nhận xóa",
-					  text: "Bạn có chắc chắn muốn xóa hay không",
-					  type: "warning",
-					  showCancelButton: true,
-					  confirmButtonClass: "btn-success",
-					  cancelButtonClass: "btn-danger",
-					  confirmButtonText: "Xác nhận",
-					  cancelButtonText: "Hủy bỏ",
-					}).then(function(isConfirm) {
-					  if (isConfirm) {
-							var ids = $('tbody input[type=checkbox]:checked').map(function () {
-					            return $(this).val();
-					        }).get();
-							//deleteNew(ids);
-							console.log(JSON.stringify(ids));
-					  }
-					});
-			} 
-			function deleteNew(data) 
-			{
-		        $.ajax({
-		            url: '/api/new',
-		            type: 'DELETE',
-		            contentType: 'application/json',
-		            data: JSON.stringify(data),
-		            success: function (result) {
-		                window.location.href = "/quantri/baiviet/danhsach?page="+$('#page').val()+"&limit=2&message=delete_success";
-		                alert("Xóa thành công");
-		            },
-		            error: function (error) {
-		            	window.location.href = "/quantri/baiviet/danhsach?page="+$('#page').val()+"&limit=2&message=error_system";
-		            	alert("Xóa thất bại");
-		            }
-		        });
-		    }
-		</script>		
-	</div>
+				//e.preventDefault();
+				swal({
+					title: "Xác nhận xóa",
+					text: "Bạn có chắc chắn muốn xóa hay không",
+					type: "warning",
+					showCancelButton: true,
+					confirmButtonClass: "btn-success",
+					cancelButtonClass: "btn-danger",
+					confirmButtonText: "Xác nhận",
+					cancelButtonText: "Hủy bỏ",
+				}).then(function (isConfirm) {
+					if (isConfirm.value == true) {
+						var ids = $('tbody input[type=checkbox]:checked').map(function () {
+							return $(this).val();
+						}).get();
+						console.log(isConfirm);
+						console.log(ids);
+						deleteNew(ids);
+					}
+				});
+			};
 
+			var table;
+			$(document).ready(function () {
+				var categoryidFromRoleCLick=$('#categoryid').val();
+				//Column7: CreatedDate
+				let orderItem = [7, "desc"];
+				table = $('#myTable').DataTable({
+					processing: true,
+					serverSide: true,
+					lengthChange: false,
+					search: {
+						return: true,
+					},
+					language: {
+						searchPlaceholder: "Title"
+					},
+					searchDelay: 400,
+					select: true,
+					responsive: true,
+					order: [orderItem],
+					ajax: {
+						url: '/api/new',
+						type: 'GET',
+						dataType: 'json',
+						data: function (data) {
+							//console.log(data);
+							if(categoryidFromRoleCLick!=0){
+								return { start: data.start, length: data.length, draw: data.draw, orderCol: data.columns[data.order[0].column].name, sortDir: data.order[0].dir, search: data.search.value, categoryid: categoryidFromRoleCLick}
+							}
+							//start bắt đầu từ element bao nhiêu vd page1:start=0, length=limit lấy bao nhiêu ele bắt đầu từ start, draw=số lần vẽ table; 
+							return { start: data.start, length: data.length, draw: data.draw, orderCol: data.columns[data.order[0].column].name, sortDir: data.order[0].dir, search: data.search.value }
+						}
+					}
+					,
+					columns: [
+						{
+							title: 'Id',
+							name: 'id',
+							data: 'id',
+							visible: false
+						},
+						{
+							title: '<input type="checkbox" id="checkAll">',
+							render: function (data, type, JsonResultRow, meta) {
+								return '<input class="chk" type="checkbox" id="checkbox_' + JsonResultRow.id + '" value="' + JsonResultRow.id + '">';
+							},
+							sortable: false,
+							searchable: false
+						},
+						{
+							title: 'Thumbnail',
+							name: 'thumbnail',
+							render: function (data, type, JsonResultRow, meta) {
+								return '<a href="/quantri/baiviet/chinhsua?id=' + JsonResultRow.id + '"><img src="/images/' + JsonResultRow.thumbnail + '" alt="Img..." id="image" name="image" style="width:10em;"></a>';
+							},
+							sortable: false,
+							searchable: false
+						},
+						{
+							title: 'Title',
+							name: 'title',
+							data: 'title'
+						},
+						{
+							title: 'Status',
+							name: 'status',
+							data: 'status',
+							searchable: false
+
+						},
+						{
+							title: 'Short Description',
+							name: 'shortDescription',
+							data: 'shortDescription',
+							sortable: false,
+							searchable: false
+						},
+						{
+							title: 'Created By',
+							name: 'createdBy',
+							data: 'createdBy',
+							searchable: false
+						},
+						{
+							title: 'Created Date',
+							name: 'createdDate',
+							data: 'createdDate',
+							render: function (data, type, JsonResultRow, meta) {
+								return `<td class="sorting_1">${moment(JsonResultRow.createdDate).format('DD/MM/YYYY, HH:mm:ss')}</td>`;
+							},
+							searchable: false
+						},
+						{
+							title: 'Last modified by',
+							name: 'modifiedBy',
+							data: 'modifiedBy',
+							searchable: false
+						},
+						{
+							title: 'Last modified Date',
+							name: 'modifiedDate',
+							data: 'modifiedDate',
+							render: function (data, type, JsonResultRow, meta) {
+								return `<td class="sorting_1">${moment(JsonResultRow.modifiedDate).format('DD/MM/YYYY, HH:mm:ss')}</td>`;
+							},
+							searchable: false
+						},
+						{
+							title: 'Cate Name',
+							name: 'category',
+							data: 'category',
+							render: function (data, type, JsonResultRow, meta) {
+								return `<td class="sorting_1">${JsonResultRow.category.name}</td>`;
+							},
+							searchable: false,
+							sortable: false
+						},
+						{
+							title: 'Action',
+							name: 'action',
+							render: function (data, type, JsonResultRow, meta) {
+								return '<a href="/quantri/baiviet/chinhsua?id=' + JsonResultRow.id + '">Edit</a>';
+							},
+							sortable: false,
+							searchable: false
+						}
+					]
+				});
+
+				$("#checkAll").change(function () {
+					var status = $(this).is(":checked") ? true : false;
+					$(".chk").prop("checked", status);
+				});
+
+			});
+			function deleteNew(data) {
+				$.ajax({
+					url: '/api/new',
+					type: 'DELETE',
+					contentType: 'application/json',
+					data: JSON.stringify(data),
+					success: function (result) {
+						swal({ title: 'Success', type: 'success', text:'Xóa thành công' });
+						table.draw();
+					},
+					error: function (error) {
+						console.log(error);
+						swal({ title: 'Error', type: 'error',text:'Error' });;
+					}
+				});
+			}
+		</script>
+
+	</div>
 </body>
+
 </html>

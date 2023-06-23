@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{/admin/adminLayout.html}" >
+<head>
+<title>Chỉnh sửa</title>
+</head>
+<body>
+	<div class="page-content" layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<form th:object="${model}" method="post" class="form-horizontal" role="form" id="formSubmit">
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right">Name</label>
+						<div class="col-sm-9">
+							<input th:field="*{name}" type="text" class="col-xs-10 col-sm-5" placeholder="Xem bài viết, Thêm bài viết ..."/>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right">Code</label>
+						<div class="col-sm-9">
+							<input type="text" th:field="*{code}" class="col-xs-10 col-sm-5" placeholder="READ_POST, CREATE_POST ..." readonly></input>
+						</div>
+					</div>
+					<input type="hidden" th:field="*{id}" id="id" />
+
+					<div class="clearfix form-actions">
+						<div class="col-md-offset-3 col-md-9">
+							<button th:text="*{id}?'Cập nhật':'Thêm'" class="btn btn-info" type="submit" id="btnAddOrUpdateNew">
+								<i class="ace-icon fa fa-check bigger-110"></i> 
+							</button>
+							&nbsp; &nbsp; &nbsp;
+							<button class="btn" type="reset" onclick="quay_lai_trang_truoc()">
+								<i class="ace-icon fa fa-undo bigger-110"></i> Hủy
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+<script>
+$("#formSubmit").validate({
+    rules: 
+    {
+    	name: {
+            required: true,
+            minlength: 4,
+            maxlength:100
+        },
+        code:{
+        	required: true,
+        	nowhitespace:true,
+            minlength: 4,
+            maxlength: 100
+        },    
+        
+    },
+    submitHandler: function(form) 
+    {
+    	callAJAX();
+    },
+    errorElement:'span',
+    errorClass:'errorMessage',
+    validClass:'is-valid',
+});
+</script>	
+	<script>
+		function callAJAX()
+		{
+		    	        var formData = new FormData($("#formSubmit")[0]);	       
+		    	        var data = Object.fromEntries(formData.entries()); //data{}
+		    	     	var id = $('#id').val();
+		    		    if (id == "")
+		    		    {
+		    		    	console.log("add");
+		    		    	//console.log(data);
+		    		    	//console.log(JSON.stringify(data));
+		    		    	add(data);
+		    		    } else
+		    		    {
+		    		    	console.log("edit");
+		    		    	//console.log(data);
+		    		    	//console.log(JSON.stringify(data));
+		    		    	update(data);
+		    		    }
+		}
+			function add(data) 
+			{
+				$.ajax({
+		            url: '/api/privilege',
+		            type: 'POST',
+		            contentType: 'application/json',
+		            data: JSON.stringify(data),
+		            dataType: 'json',
+		            success: function (result) {
+		            	swal({ title: 'Success', type: 'success', text:'Thành công' });
+		            	window.location.href = '/quantri/privilege/';
+		            },
+		            error: function (error) {
+		            	swal({ title: 'Error', type: 'error', text:'Thất bại mời thử lại' });
+		            	window.location.href = '/quantri/privilege/';
+		            }
+		        });
+			}			
+			function update(data) 
+			{
+				$.ajax({
+		            url: '/api/privilege',
+		            type: 'PUT',
+		            contentType: 'application/json',
+		            data: JSON.stringify(data),
+		            dataType: 'json',
+		            success: function (result) {
+		            	swal({ title: 'Success', type: 'success', text:'Thành công' });
+						window.location.href = '/quantri/privilege/';
+		            	//window.location.href = "/quantri/role/chinhsua?id=" +result.id+ "&message=insert_success";
+		            	
+		            },
+		            error: function (error) {		            	
+		            	swal({ title: 'Error', type: 'error', text:'Thất bại mời thử lại' });
+		            	//window.location.href = "/quantri/role/chinhsua?message=error_system";
+		            }
+		        });
+			}			
+		    function quay_lai_trang_truoc()
+		    {
+		        history.back();
+		    }
+		</script>			
+	</div>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="col-12 col-md-8 col-lg-4" th:fragment="world_sidebar">
+    <div class="post-sidebar-area wow fadeInUpBig" data-wow-delay="0.2s">
+        <!-- Widget Area -->
+        <!-- Widget Area -->
+        <div class="sidebar-widget-area" >
+            <h5 class="title" id="topStories">Top Stories</h5>
+            <div class="widget-content" id="newestPosts">
+                <!-- Single Blog Post -->
+                <div class="single-blog-post post-style-2 d-flex align-items-center widget-post">
+                    <!-- Post Thumbnail -->
+                    <div class="post-thumbnail">
+                        <img th:src="@{/global/World/img/blog-img/b11.jpg}" alt="">
+                    </div>
+                    <!-- Post Content -->
+                    <div class="post-content">
+                        <a href="#" class="headline">
+                            <h5 class="mb-0">How Did van Gogh’s Turbulent Mind Depict One of the Most</h5>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Widget Area -->
+        <div class="sidebar-widget-area">
+            <h5 class="title">Stay Connected</h5>
+            <div class="widget-content">
+                <div class="social-area d-flex justify-content-between">
+                    <a href="#"><i class="fa fa-facebook"></i></a>
+                    <a href="#"><i class="fa fa-twitter"></i></a>
+                    <a href="#"><i class="fa fa-pinterest"></i></a>
+                    <a href="#"><i class="fa fa-vimeo"></i></a>
+                    <a href="#"><i class="fa fa-instagram"></i></a>
+                    <a href="#"><i class="fa fa-google"></i></a>
+                </div>
+            </div>
+        </div>
+        <!-- Widget Area -->
+    </div>
+    <script>
+        var categoryCode='all';
+        $(document).ready(function(e){
+            //Nếu ở trang home thì sẽ không có cateCode cụ thể của bài viết đang đọc, categoryCode sẽ bằng chuỗi rỗng
+            categoryCode=$('#categoryCode').text();
+            if(categoryCode!=''){
+                $('#topStories').text('Relevant');
+            }
+            loadPosts(categoryCode);
+        });
+        function loadPosts(categoryCode) {
+            let url = '/api/new/page?page=1';
+            if(categoryCode!=undefined && categoryCode!=null && categoryCode!='')
+            {
+                url+=`&cateCode=${categoryCode}`;
+            }
+            let str='';
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    //Nếu không có bài viết liên quan => tìm những bài viết mới nhất để thay thế
+                    if(data.content.length==0)
+                    {
+                        loadPosts('all');
+                    }
+                    $.each(data.content, function (i, item) {
+                        str+='<div class="single-blog-post post-style-2 d-flex align-items-center widget-post">';
+                            str+='<div class="post-thumbnail">';
+                                str+='<img src="/images/'+item.thumbnail+'" alt="">';
+                            str+='</div>';
+                            str+='<div class="post-content">';
+                                str+='<a href="/baiviet/'+item.id+'" class="headline">';
+                                    str+='<h5 class="mb-0">'+item.title+'</h5>';
+                                str+='</a>';
+                            str+='</div>';
+                        str+='</div>';   
+                    });
+                    $("#newestPosts").html(str);
+                },
+                error: function (error) {
+                    console.log("loadPosts()-WorldSideBar.html");
+                    console.log(error);
+                }
+            });
+        }
+    </script>
+</div>
+</html>

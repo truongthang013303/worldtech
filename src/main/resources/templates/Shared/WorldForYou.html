@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+</head>
+
+<body>
+  <th:block th:fragment="foryou">
+    <div id="foryou">
+      <div class="title">
+        <h5>For You</h5>
+      </div>
+      <div class="single-blog-post wow fadeInUpBig" data-wow-delay="0.2s" id="defaultPost">
+
+        <div class="post-thumbnail">
+          <img th:src="@{/global/World/img/blog-img/b7.jpg}" alt="">
+
+          <div class="post-cta"><a href="#">travel</a></div>
+
+          <a href="https://www.youtube.com/watch?v=IhnqEwFSJRg" class="video-btn"><i class="fa fa-play"></i></a>
+        </div>
+
+        <div class="post-content">
+          <a href="#" class="headline">
+            <h5>How Did van Gogh’s Turbulent Mind Depict One of the Most Complex Concepts in Physics?
+            </h5>
+          </a>
+          <p>How Did van Gogh’s Turbulent Mind Depict One of the Most Complex Concepts in...</p>
+
+          <div class="post-meta">
+            <p><a href="#" class="post-author">Katy Liu</a> on <a href="#" class="post-date">Sep 29,
+                2017 at
+                9:48 am</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      $(document).ready(function (e) {
+        var useridSecurity = $('#useridSecurity').text();
+        let ckuserid = '';
+        ckuserid = $.cookie('userid');
+        if (useridSecurity != '' && ckuserid != undefined && useridSecurity === ckuserid) {
+          loadRecommendationItems(ckuserid);
+        } else {
+          $('#foryou').hide();
+        }
+        //loadRecommendationItems();
+      });
+
+      function loadRecommendationItems(userid = 1) {
+
+        let url = '/api/red/ub';
+        url += `?userid=${userid}`;
+        let str = '';
+        $.ajax({
+          url: url,
+          type: 'GET',
+          success: function (data) {
+            if(data.length == 0){
+              $('#foryou').hide();
+            }else{
+              $('#foryou').show();
+            }
+            $.each(data, function (i, item) {
+              str+=`<div class="single-blog-post wow fadeInUpBig" data-wow-delay="0.2s">`;
+
+                str+=`<div class="post-thumbnail">`;
+                  str+=`<img th: src="/images/${item.thumbnail}" alt="">`;
+
+                    str+=`<div class="post-cta"><a href="#">travel</a></div>`;
+
+                    str+=`<a href="https://www.youtube.com/watch?v=IhnqEwFSJRg" class="video-btn"><i class="fa fa-play"></i></a>`;
+                str+=`</div>`;
+
+                str+=`<div class="post-content">`;
+                  str+=`<a href="/baiviet/${item.id}" class="headline">`;
+                    str+=`<h5>${item.shortDescription}</h5>`;
+                  str+=`</a>`;
+                  str+=`<p>${item.title}</p>`;
+
+                  str+=`<div class="post-meta">`;
+                    str+=`<p><a href="/baiviet/${item.id}" class="post-author">${item.createdBy}</a> on <a href="#" class="post-date">${moment(item.createdDate).startOf('hour').fromNow()}</a></p>`;
+                  str+=`</div>`;
+                str+=`</div>`;
+              str+=`</div>`;
+            });
+            $("#defaultPost").html(str);
+          },
+          error: function (error) {
+            console.log("loadRecommendationItems()-WorldForYou.html");
+            console.log(error);
+          }
+        });
+      }
+    </script>
+  </th:block>
+</body>
+
+</html>

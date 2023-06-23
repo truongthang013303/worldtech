@@ -1,46 +1,55 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-layout:decorate="~{/admin/adminLayout.html}" >
+	layout:decorate="~{/admin/adminLayout.html}">
+
 <head>
-<title>Chỉnh sửa</title>
+	<title>Chỉnh sửa</title>
 </head>
+
 <body>
 	<div class="page-content" layout:fragment="content">
 		<div class="row">
 			<div class="col-xs-12">
-						<div id="divAlert" th:if="${model.message!=null} " th:text="${model.message}" class ="alert" th:classappend="${#strings.length(model.message)>1} ? alert-+${model.alert} : alert">
-							<input type="hidden" name="alert" id="alert"/>
-						</div>
 				<form th:object="${model}" method="post" class="form-horizontal" role="form" id="formSubmit">
+					<input type="hidden" th:field="*{id}" id="roleid" name="roleid" />
 					<div class="form-group">
 						<label class="col-sm-3 control-label no-padding-right">Name</label>
 						<div class="col-sm-9">
-							<input th:field="*{name}" type="text" class="col-xs-10 col-sm-5" placeholder="Quản trị1, Quản trị2 ..."/>
+							<input th:field="*{name}" type="text" class="col-xs-10 col-sm-5"
+								placeholder="Quản trị1, Quản trị2 ..." />
 						</div>
 					</div>
 
-					<div class="form-group">
+					<div class="form-group" th:if="*{id}==null">
 						<label class="col-sm-3 control-label no-padding-right">Code</label>
 						<div class="col-sm-9">
-							<input type="text" th:field="*{code}" class="col-xs-10 col-sm-5" placeholder="ADMIN1, ADMIN2 ..."></input>
+							<input type="text" th:field="*{code}" class="col-xs-10 col-sm-5"
+								placeholder="ROLE_ADMIN1, ROLE_ADMIN2 ..."></input>
 						</div>
 					</div>
-					<input type="hidden" th:field="*{id}" id="roleId" />
-
-<!--					phan quyen-->
+					<div class="form-group" th:if="*{id}!=null">
+						<label class="col-sm-3 control-label no-padding-right">Code</label>
+						<div class="col-sm-9">
+							<input type="text" th:field="*{code}" class="col-xs-10 col-sm-5"
+								placeholder="ROLE_ADMIN1, ROLE_ADMIN2 ..." readonly></input>
+						</div>
+					</div>
+					<!--phan quyen-->
 					<th:block th:each="privilege: ${privileges}">
 						<div class="form-group">
 							<label class="col-sm-3 control-label no-padding-right"></label>
 							<div class="col-sm-9">
-								<input type="checkbox" th:field="*{privilegeCode}" th:value="${privilege.code}" class="col-sm-1"> [[${privilege.name}]]
+								<input type="checkbox" th:field="*{privilegeCode}" th:value="${privilege.code}"
+									class="col-sm-1"> [[${privilege.name}]]
 							</div>
 						</div>
 					</th:block>
 
 					<div class="clearfix form-actions">
 						<div class="col-md-offset-3 col-md-9">
-							<button th:text="*{id}?'Cập nhật':'Thêm'" class="btn btn-info" type="submit" id="btnAddOrUpdateNew">
-								<i class="ace-icon fa fa-check bigger-110"></i> 
+							<button th:text="*{id}?'Cập nhật':'Thêm'" class="btn btn-info" type="submit"
+								id="btnAddOrUpdateNew">
+								<i class="ace-icon fa fa-check bigger-110"></i>
 							</button>
 							&nbsp; &nbsp; &nbsp;
 							<button class="btn" type="reset" onclick="quay_lai_trang_truoc()">
@@ -51,102 +60,89 @@ layout:decorate="~{/admin/adminLayout.html}" >
 				</form>
 			</div>
 		</div>
-<script>
-$("#formSubmit").validate({
-    rules: 
-    {
-    	name: {
-            required: true,
-            minlength: 4,
-            maxlength:15
-        },
-        code:{
-        	required: true,
-        	nowhitespace:true,
-            minlength: 4,
-            maxlength: 10
-        },    
-        
-    },
-    submitHandler: function(form) 
-    {
-    	callAJAX();
-    },
-    errorElement:'span',
-    errorClass:'errorMessage',
-    validClass:'is-valid',
-});
-</script>	
-	<script>
-		function callAJAX()
-		{
-		    	        var formData = new FormData($("#formSubmit")[0]);	       
-		    	        var data = Object.fromEntries(formData.entries()); //data{}
-		    	        data.privilegeCode = formData.getAll("privilegeCode");
-		    	     	var id = $('#roleId').val();
-		    		    if (id == "")
-		    		    {
-		    		    	console.log("add");
-		    		    	//console.log(data);
-		    		    	//console.log(JSON.stringify(data));
-		    		    	add(data);
-		    		    } else
-		    		    {
-		    		    	console.log("edit");
-		    		    	//console.log(data);
-		    		    	//console.log(JSON.stringify(data));
-		    		    	update(data);
-		    		    }
-		}
-			function add(data) 
-			{
+		<script>
+			$("#formSubmit").validate({
+				rules:
+				{
+					name: {
+						required: true,
+						minlength: 4,
+						maxlength: 50
+					},
+					code: {
+						required: true,
+						nowhitespace: true,
+						minlength: 4,
+						maxlength: 50
+					},
+
+				},
+				submitHandler: function (form) {
+					callAJAX();
+				},
+				errorElement: 'span',
+				errorClass: 'errorMessage',
+				validClass: 'is-valid',
+			});
+		</script>
+		<script>
+			function callAJAX() {
+				var formData = new FormData($("#formSubmit")[0]);
+				var data = Object.fromEntries(formData.entries()); //data{}
+				data.privilegeCode = formData.getAll("privilegeCode");
+				var id = $('#roleId').val();
+				if (id == "") {
+					console.log("add");
+					//console.log(data);
+					//console.log(JSON.stringify(data));
+					add(data);
+				} else {
+					console.log("edit");
+					//console.log(data);
+					//console.log(JSON.stringify(data));
+					update(data);
+				}
+			}
+			function add(data) {
 				$.ajax({
-		            url: '/api/role',
-		            type: 'POST',
-		            contentType: 'application/json',
-		            data: JSON.stringify(data),
-		            dataType: 'json',
-		            success: function (result) {
-		            	console.log('Ket qua tra ve cua api');
-		            	console.log(result);
-		            	swal('Thêm thành công');
-		            	//alert("Thành công");
-		            	//window.location.href = "/quantri/role/chinhsua?id=" +result.id+ "&message=insert_success";
-		            },
-		            error: function (error) {
-		            	alert("Thất bại mời thử lại");
-		            	window.location.reload();
-		            	//window.location.href = "/quantri/role/chinhsua?message=error_system";
-		            }
-		        });
-			}			
-			function update(data) 
-			{
+					url: '/api/role',
+					type: 'POST',
+					contentType: 'application/json',
+					data: JSON.stringify(data),
+					dataType: 'json',
+					success: function (result) {
+						swal('Thêm thành công');
+						//window.location.href = "/quantri/role/chinhsua?id=" +result.id+ "&message=insert_success";
+					},
+					error: function (error) {
+						alert("Thất bại mời thử lại");
+						//window.location.href = "/quantri/role/chinhsua?message=error_system";
+					}
+				});
+			}
+			function update(data) {
 				$.ajax({
-		            url: '/api/role',
-		            type: 'PUT',
-		            contentType: 'application/json',
-		            data: JSON.stringify(data),
-		            dataType: 'json',
-		            success: function (result) {
-		            	//alert("Thành công");
-		            	swal('Cập nhập thành công');
-		            	window.location.reload();
-		            	//window.location.href = "/quantri/role/chinhsua?id=" +result.id+ "&message=insert_success";
-		            	
-		            },
-		            error: function (error) {		            	
-		            	alert("Thất bại mời thử lại");
-		            	window.location.reload();
-		            	//window.location.href = "/quantri/role/chinhsua?message=error_system";
-		            }
-		        });
-			}			
-		    function quay_lai_trang_truoc()
-		    {
-		        history.back();
-		    }
-		</script>			
+					url: '/api/role',
+					type: 'PUT',
+					contentType: 'application/json',
+					data: JSON.stringify(data),
+					dataType: 'json',
+					success: function (result) {
+						swal('Cập nhập thành công');
+						//window.location.href = "/quantri/role/chinhsua?id=" +result.id+ "&message=insert_success";
+
+					},
+					error: function (error) {
+						alert("Thất bại mời thử lại");
+						//window.location.href = "/quantri/role/chinhsua?message=error_system";
+					}
+				});
+			}
+			function quay_lai_trang_truoc() {
+				history.back();
+			}
+		</script>
 	</div>
 </body>
+
 </html>

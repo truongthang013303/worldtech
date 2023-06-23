@@ -1,0 +1,1 @@
+//console.log('commonJS.js in /static/global/JS');

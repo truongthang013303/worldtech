@@ -1,21 +1,42 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
-    <th:block th:replace="/Shared/WorldHeader::world_header"></th:block>
+    <th:block th:replace="/Shared/WorldHead::world_head"></th:block>
 </head>
 <body>
 <th:block th:replace="/Shared/WorldNavBar::world_navbar"></th:block>
 
 <div class="main-content-wrapper section-padding-100" >
     <div class="container">
-    <th:block layout:fragment="content">
+        <!-- Row1 -->
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8">
+                <th:block layout:fragment="content"></th:block>
+            </div>
+            <div class="col-12 col-md-8 col-lg-4" th:replace="/Shared/WorldSideBar::world_sidebar">
+            </div>
+        </div>
+        <!-- Row2 -->
+        <th:block th:replace="/Shared/WorldPart2::world_part2"></th:block>
+        <!-- Row3 -->
+        <div class="world-latest-articles">
+            <div class="row">
+                <div class="col-12 col-lg-8" id="lastestArticles">
+                    <th:block layout:fragment="contentRow3">
+        
+                    </th:block>
+                </div>
+        
+                <!-- ForYou -->
+                <div class="col-12 col-lg-4">
+                    <th:block th:replace="/Shared/WorldForYou::foryou"></th:block>
+                </div><!-- ForYou End -->
+            </div>
+            <div class="row">
+                <div class="col-12 col-lg-8">
+                    <th:block layout:fragment="homeLoadMore">
 
-    </th:block>
-        <!-- Load More btn -->
-        <div class="row">
-            <div class="col-12">
-                <div class="load-more-btn mt-50 text-center">
-                    <a href="#" class="btn world-btn" id="appendBut">Load More</a>
+                    </th:block>
                 </div>
             </div>
         </div>

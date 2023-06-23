@@ -1,17 +1,15 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-layout:decorate="~{/admin/adminLayout.html}" >
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{/admin/adminLayout.html}">
+
 <head>
-<title>Chỉnh sửa</title>
-<script th:src="@{/global/ckeditor/ckeditor.js}"></script>
+	<title>Chỉnh sửa</title>
 </head>
+
 <body>
-	<div class="page-content" layout:fragment="content">	
+	<div class="page-content" layout:fragment="content">
 		<div class="row">
 			<div class="col-xs-12">
-				<div id="divAlert" th:if="${model.message!=null} " th:text="${model.message}" class ="alert" th:classappend="${#strings.length(model.message)>1} ? alert-+${model.alert} : alert">
-					 <input type="hidden" name="alert" id="alert"/>
-				</div>	
 				<form th:object="${model}" method="post" class="form-horizontal" role="form" id="formSubmit">
 
 					<div class="form-group">
@@ -19,195 +17,324 @@ layout:decorate="~{/admin/adminLayout.html}" >
 						<div class="col-sm-9">
 							<select th:field="*{categoryCode}" name="categoryCode">
 								<option value="" selected="selected">---Mời chọn---</option>
-							    <option th:each="cate:${listCate}" th:value="${cate.code}" th:text="${cate.name}"></option> 
+								<option th:each="cate:${listCate}" th:value="${cate.code}" th:text="${cate.name}">
+								</option>
 							</select>
 						</div>
 					</div>
-					
+
 					<div class="form-group">
-						<label class="col-sm-3 control-label no-padding-right"
-							for="form-field-1">Tên bài viết</label>
+						<label class="col-sm-3 control-label no-padding-right" for="">Tên bài viết</label>
 						<div class="col-sm-9">
-							<input th:field="*{title}" type="text"  class="col-xs-12 col-sm-8" />
+							<input th:field="*{title}" type="text" class="col-xs-12 col-sm-12" data-charcount="true" data-maxlen="200" data-minlen="10"/>
 						</div>
 						<ul id="message">
 						</ul>
 					</div>
-
+					<th:block th:if="*{createdBy}">
 					<div class="form-group">
-						<label class="col-sm-3 control-label no-padding-right"
-							for="form-field-1">Ảnh đại diện</label>
+						<label class="col-sm-3 control-label no-padding-right" for="form-input-readonly">Người tạo</label>
+
 						<div class="col-sm-9">
-							<img  th:src="@{'/images/'+ *{thumbnail}}" alt="Img..." id="image" name="image" width="600px" height="400px" />
+							<input type="text" id="form-input-readonly" th:field="*{createdBy}" readonly="true">
+						</div>
+					</div>
+					</th:block>
+
+					<div class="form-group" sec:authorize="isAuthenticated() and hasRole('ROLE_ADMIN') OR hasAuthority('PUBLISH_POST')">
+						<label for="" class="col-sm-3 control-label no-padding-right">Trạng thái:</label>
+						<div class="col-sm-9">
+							<select th:field="*{status}" onchange="messageDisplay()">
+								<option value="" selected="selected">---Mời chọn---</option>
+								<option th:each="value:${T(com.example.demo1.dto.PostStatus).values()}"
+									th:value="${value}" th:text="${value.postStatusName}"></option>
+							</select>
+						</div>
+					</div>
+
+					<div class="form-group" sec:authorize="isAuthenticated() and !hasAuthority('PUBLISH_POST')">
+						<label class="col-sm-3 control-label no-padding-right" for="">Trạng thái</label>
+						<div class="col-sm-9">
+							<input type="text" th:value="*{status}?*{status.postStatusName}:'NaN'" class="col-xs-12 col-sm-12" readonly="true"/>
+							<input th:field="*{status}" type="hidden" class="col-xs-12 col-sm-8" />
+						</div>
+					</div>
+
+					<div class="form-group" id="containerMessageDenied">
+						<label class="col-sm-3 control-label no-padding-right" for="">Nội dung phản hồi:</label>
+						<div class="col-sm-9">
+							<input th:field="*{messageDenied}" type="text" class="col-xs-12 col-sm-12"
+								data-charcount="true" data-maxlen="200" data-minlen="10"/>
 						</div>
 					</div>
 
 					<div class="form-group">
-					<label class="col-sm-3 control-label no-padding-right"
-							>Ảnh đại diện</label>
+						<label class="col-sm-3 control-label no-padding-right" for="">Ảnh đại diện</label>
 						<div class="col-sm-9">
-							<input type="file" name="thumbnail" id="thumbnail" onchange="previewFile()" accept="image/*"/>
+							<!-- <img th:src="@{'/images/'+ *{thumbnail}}" alt="Img of a post" id="image" name="image" width="50%" height="50%" /> -->
+							<img th:src="*{thumbnail}?@{'/images/'+ *{thumbnail}}:@{'/global/World/img/blog-img/b8.jpg'}" alt="Img of a post" id="image" name="image" width="50%" height="50%" />
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right">Chọn ảnh đại diện</label>
+						<div class="col-sm-9">
+							<input type="file" name="thumbnail" id="thumbnail" onchange="previewFile()"
+								accept="image/*" />
 						</div>
 					</div>
 
 					<div class="form-group">
 						<label class="col-sm-3 control-label no-padding-right">Mô tả ngắn</label>
 						<div class="col-sm-9">
-							<textarea th:field="*{shortDescription}" name="shortDescription" id="shortDescription" cols="100" rows="10"></textarea>
+							<textarea th:field="*{shortDescription}" name="shortDescription" id="shortDescription"
+								style="width: 100%;" data-charcount="true" data-maxlen="200" data-minlen="10"></textarea>
 						</div>
 					</div>
 
 					<div class="form-group">
 						<label class="col-sm-3 control-label no-padding-right">Nội dung</label>
 						<div class="col-sm-9">
-							<textarea th:field="*{content}" id="content" cols="100" rows="10"></textarea>
+							<textarea th:field="*{content}" id="content" cols="100" rows="10" style="width:100%; aspect-ratio:1/1"></textarea>
 						</div>
 					</div>
-					
+
 					<input type="hidden" th:field="*{id}" id="newId" />
 
 					<div class="clearfix form-actions">
 
 						<div class="col-md-offset-3 col-md-9">
-							<button th:text="*{id}?'Cập nhật bài viết':'Thêm bài viết'" class="btn btn-info" type="submit" id="btnAddOrUpdateNew">
-								<i class="ace-icon fa fa-check bigger-110"></i> 
+							<button
+								sec:authorize="isAuthenticated() and hasAnyAuthority('CREATE_POST','UPDATE_POST','UPDATE_SELF_POST')"
+								th:text="*{id}?'Cập nhật bài viết':'Thêm bài viết'" class="btn btn-info" type="submit"
+								id="btnAddOrUpdateNew">
+								<i class="ace-icon fa fa-check bigger-110"></i>
 							</button>
-
-							&nbsp; &nbsp; &nbsp;
 							<button class="btn" type="reset" onclick="quay_lai_trang_truoc()">
 								<i class="ace-icon fa fa-undo bigger-110"></i> Hủy
 							</button>
+
+							<!--							<button sec:authorize="isAuthenticated() and hasAuthority('PUBLISH_POST')" th:text="'PUBLISH'" class="btn btn-info" type="submit" id="btnPublish" onclick="clickBtnPublish()">
+								<i class="ace-icon fa fa-check bigger-110"></i>
+							</button>-->
+
 						</div>
 					</div>
 				</form>
 			</div>
 		</div>
-<script>
-$("#formSubmit").validate({
-    rules: {
-    	categoryCode: {
-            required: true
-        },
-        title: {
-            required: true,
-            minlength: 10,
-            maxlength: 95
-        },
-        shortDescription: {
-            required: true,
-            minlength: 60,
-            maxlength: 190
-        },
-        content: {
-            required: true,
-            minlength:60
-        }
-    },
-    errorElement:'span',
-    errorClass:'errorMessage',
-    validClass:'is-valid',
-    submitHandler: function(form) 
-    {
-    	callAJAX();
-    },});
-</script>
 		<script>
- 		var editor ='';
-		$(document).ready(function(){
-			editor = CKEDITOR.replace('content');
-		});
+			$("#formSubmit").validate({
+				rules: {
+					categoryCode: {
+						required: true
+					},
+					title: {
+						required: true,
+						minlength: 10
+					},
+					shortDescription: {
+						required: true,
+						minlength: 60
+					},
+					content: {
+						required: true,
+						minlength: 60
+					},
+					messageDenied:{
+						required: true,
+						minlength: 10,
+						maxlength:200
+					}
+				},
+				errorElement: 'span',
+				errorClass: 'errorMessage',
+				validClass: 'is-valid',
+				submitHandler: function (form) {
+					callAJAX();
+				},
+			});
+		</script>
 
-		function callAJAX()
-		{   
-		    	        var formData = new FormData($("#formSubmit")[0]);
-		    	        var file = formData.get("thumbnail");
-		    	        var nameFileCheck = file.name.toLowerCase();		    	        
-		    	        var data = Object.fromEntries(formData.entries()); //data{}		    	        
-		    	        var img = document.querySelector('img');
-		    	        img.style.width = '600px';
-		    	        img.style.height = '400px';
-		    	        var src = img.src;
-		    	        data['thumbnail']=src.substring(src.lastIndexOf(",")+1);
-		    	        data['name'] = nameFileCheck;		    	        
-		    	        data['content']=editor.getData();
-		    	        //data['shortDescription']=editor2.getData();
-		    	     	var id = $('#newId').val();		
-		    		    if (id == "")
-		    		    {
-		    		    	//console.log("addNew");
-		    		    	//console.log(data);
-		    		    	addNew(data);
-		    		    } else if(img.src.endsWith('.jpg')==true)
-		    		    	{
-		    		    	 		data['thumbnail']=src.substring(src.lastIndexOf("/")+1);
-		    		    	 		//console.log(data);
-		    		    	    	updateNew(data);
-		    		    	}
-		    		    	else
-		    		    	{
-		    		    		//console.log(data);
-		    		    		updateNew(data);
-		    		    	}
-		    	    
-		}
-			function addNew(data) 
-			{
+		<script>
+			var editor = '';
+			$(document).ready(function () {
+				editor = CKEDITOR.replace('content',{
+					filebrowserUploadUrl: 'http://localhost:8084/ckfinder/upload'
+				});
+				CKEDITOR.config.height='80vh';
+
+				messageDisplay();
+
+				$('[data-charcount="true"]').charcount({
+					errFontColor: 'red',
+					okFontColor: 'green',
+					FontWeight: 'bold',
+					NumOfCharOfAlert: 20,
+					isAlwaysOn: true
+				});
+
+			});
+
+			function messageDisplay() {
+				var selectedValue = $("#status").find(":selected").val();
+				console.log(selectedValue);
+				var inputStatusValue = $("#status").val();
+				console.log(inputStatusValue);
+				if (selectedValue == 'TUCHOI' || inputStatusValue == 'TUCHOI') {
+					$('#containerMessageDenied').show();
+				}
+				else {
+					$('#containerMessageDenied').hide();
+					//Nếu status khác từ chối: chờ duyệt, đã được duyệt, default thì sẽ không có thông điệp(lý do) bị từ chối
+					//Chỉ có những bài viết ở trạng thái từ chối mới có lý do bị từ chối
+					$('#messageDenied').val('');
+				}
+			}
+
+			function getFormData() {
+				var formData = new FormData($("#formSubmit")[0]);
+				var file = formData.get("thumbnail");
+				var nameOfInPutFile = file.name.toLowerCase();
+				var data = Object.fromEntries(formData.entries()); //data{}
+				var img = document.querySelector('img');
+				//img.style.width = '600px';
+				//img.style.height = '400px';
+				var src = img.src;
+				//console.log(src);
+				if (file.size == 0) {
+					data['thumbnail'] = "";
+				} else//trường hợp file.size!=0 tức là có 1 file hình ảnh nào đó được chọn kích hoạt sự kiện onChange thay đổi thẻ img, lúc này img.src sẽ=1 chuỗi base64
+				{
+					data['thumbnail'] = src.substring(src.lastIndexOf("data:image/webp;base64,") + 1);//cắt đi phần đầu của chuỗi base64 'data:image/png;base64,'
+				}
+				//console.log(data['thumbnail']);
+				data['name'] = nameOfInPutFile;
+				data['content'] = editor.getData();
+				//data['shortDescription']=editor2.getData();
+
+				//Khi thêm mới bài viết Status sẽ ="" nên gán lại cho nó bằng "DEFAULT" để mapping với NewDTO trên server
+				if (data['status'] == "") {
+					data['status'] = "DEFAULT";
+				}
+				return data;
+			}
+
+			function clickBtnPublish() {
+				publishNew(getFormData());
+			}
+
+			function callAJAX() {
+				var formData = new FormData($("#formSubmit")[0]);
+				var file = formData.get("thumbnail");
+				var nameOfInPutFile = file.name.toLowerCase();
+				var data = Object.fromEntries(formData.entries()); //data{}		    	        
+				var img = document.querySelector('img');
+				//img.style.width = '600px';
+				//img.style.height = '400px';
+				var src = img.src;
+				//console.log(src);
+				if (file.size == 0) {
+					data['thumbnail'] = "";
+				} else//trường hợp file.size!=0 tức là có 1 file hình ảnh nào đó được chọn kích hoạt sự kiện onChange thay đổi thẻ img, lúc này img.src sẽ=1 chuỗi base64
+				{
+					data['thumbnail'] = src.substring(src.lastIndexOf(",") + 1);//cắt đi phần đầu của chuỗi base64 'data:image/png;base64,'
+				}
+				//console.log(data['thumbnail']);
+				data['name'] = nameOfInPutFile;
+				data['content'] = editor.getData();
+				//data['shortDescription']=editor2.getData();
+
+				//Khi thêm mới bài viết Status sẽ ="" nên gán lại cho nó bằng "DEFAULT" để mapping với NewDTO trên server
+				if (data['status'] == "") {
+					data['status'] = "DEFAULT";
+				}
+
+				var id = $('#newId').val();
+
+				console.log(data);
+
+				if (id == "") {
+					console.log("addNew");
+					console.log(data);
+					addNew(data);
+				} else {
+					console.log("UpdateNew");
+					console.log(data);
+					updateNew(data);
+				}
+
+			}
+			function addNew(data) {
 				$.ajax({
-		            url: '/api/new',
-		            type: 'POST',
-		            contentType: 'application/json',
-		            data: JSON.stringify(data),
-		            dataType: 'json',
-		            success: function (result) {
-		            	alert("Thành công");
-		            	window.location.href = "/quantri/baiviet/chinhsua?id="+result.id+"&message=insert_success";
-		            },
-		            error: function (error) {
-		            	alert("Thất bại mời thử lại");
-		            	window.location.href = "/quantri/baiviet/chinhsua?message=error_system";	
-		            }
-		        });
-			}			
-			function updateNew(data) 
-			{
+					url: '/api/new',
+					type: 'POST',
+					contentType: 'application/json',
+					data: JSON.stringify(data),
+					dataType: 'json',
+					success: function (result) {
+						swal({ title: 'Success', type: 'success', text:'Thêm bài viết thành công' });
+						window.location.href='/quantri/baiviet/danhsach';
+					},
+					error: function (error) {
+						console.log(error);
+						swal({ title: 'Error', type: 'error', text:'Thất bại mời thử lại' });
+						window.location.href='/quantri/baiviet/danhsach';
+					}
+				});
+			}
+			function updateNew(data) {
 				$.ajax({
-		            url: '/api/new',
-		            type: 'PUT',
-		            contentType: 'application/json',
-		            data: JSON.stringify(data),
-		            dataType: 'json',
-		            success: function (result) {
-		            	alert("Success, please refesh images folder");
-		            	window.location.href = "/quantri/baiviet/chinhsua?id="+result.id+"&message=insert_success";
-		            },
-		            error: function (error) {
-		            	alert("Thất bại mời thử lại");
-		            	window.location.href = "/quantri/baiviet/chinhsua?message=error_system";
-		            }
-		        });
-			}			
-		    function previewFile() 
-		    {
-		        const preview = document.querySelector('img');
-		        const file = document.querySelector('input[type=file]').files[0];
-		        const reader = new FileReader();
-		        reader.addEventListener("load", function () {
-		            // convert image file to base64 string
-		            preview.src = reader.result;
-		            preview.style.width="600px";
-		            preview.style.height="400px";
-		        }, false);
-		        if (file) 
-		        {
-		            reader.readAsDataURL(file);
-		        }
-		     }
-			
-		    function quay_lai_trang_truoc()
-		    {
-		        history.back();
-		    }	    
-		</script>			
+					url: '/api/new',
+					type: 'PUT',
+					contentType: 'application/json',
+					data: JSON.stringify(data),
+					dataType: 'json',
+					success: function (result) {
+						swal({ title: 'Success', type: 'success', text:'Thành công' });
+					},
+					error: function (error) {
+						swal({ title: 'Error', type: 'error', text:'Thất bại mời thử lại' })
+					}
+				});
+			}
+
+			function publishNew(data) {
+				$.ajax({
+					url: '/api/new/publish',
+					type: 'PUT',
+					contentType: 'application/json',
+					data: JSON.stringify(data),
+					dataType: 'json',
+					success: function (result) {
+						alert("Thành công");
+					},
+					error: function (error) {
+						alert("Thất bại mời thử lại");
+					}
+				});
+			}
+
+			function previewFile() {
+				const preview = document.querySelector('img');
+				const file = document.querySelector('input[type=file]').files[0];
+				const reader = new FileReader();
+				reader.addEventListener("load", function () {
+					// convert image file to base64 string
+					preview.src = reader.result;
+					preview.style.width = "50%";
+					preview.style.height = "50%";
+				}, false);
+				if (file) {
+					reader.readAsDataURL(file);
+				}
+			}
+
+			function quay_lai_trang_truoc() {
+				history.back();
+			}	    
+		</script>
 	</div>
 </body>
+
 </html>

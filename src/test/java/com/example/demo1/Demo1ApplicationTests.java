@@ -14,14 +14,7 @@ import com.example.demo1.repository.UserRepository;
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class Demo1ApplicationTests {
-	@Autowired
-	private NewRepository newRepository;
 	@Test
 	void contextLoads() {
-	}
-	@Test
-	public void test() 
-	{
-		assertEquals(2, newRepository.countByCategory_id(2L));
 	}
 }

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html xmlns:th="http:/www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+    xmlns:layout="http:/www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{/Shared/_WorldLayout.html}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="https://jsuites.net/v4/jsuites.js"></script>
+    <script src="https://jsuites.net/v4/jsuites.webcomponents.js"></script>
+    <link rel="stylesheet" href="https://jsuites.net/v4/jsuites.css" type="text/css" />
+    <!-- The above 4 meta tags *must* come first in the head; ay other head content must come *after* these tags -->
+    <!-- Title  -->
+    <title>World</title>
+</head>
+
+<body>
+    <!-- Preloader Start -->
+    <div id="preloader">
+        <div class="preload-content">
+            <div id="world-load"></div>
+        </div>
+    </div>
+    <!-- Preloader End -->
+    <!-- ***** Header Area Start ***** -->
+    <!-- ***** Header Area End ***** -->
+    <!-- ********** Hero Area Start ********** -->
+    <!-- ********** Hero Area End ********** -->
+    <div class="main-content-wrapper section-padding-100">
+        <div class="container">
+            <div class="row justify-content-center">
+                <!-- ============= Post Content Area ============= -->
+                <div class="col-12 col-lg-8">
+                    <div class="single-blog-content mb-100" layout:fragment="content">
+                        <input type="hidden" name="idPost" id="idPost" th:value="${model.id}">
+                        <input type="hidden" name="usernameCurrentClient" id="usernameCurrentClient"
+                            th:value="${appUser}">
+                        <!-- Post Meta -->
+                        <div class="post-meta">
+                            <p><a href="#" class="post-author" th:text="${model.createdBy}">Katy Liu</a> on <a href="#"
+                                    class="post-date"
+                                    th:text="${#dates.format(model.createdDate, 'HH:mm dd-MM-yyyy')}">Sep 29, 2017 at
+                                    9:48 am</a></p>
+                        </div>
+                        <!-- Post Content -->
+                        <div class="post-content">
+                            <a href="#" class="headline">
+                                <h5 th:text="${model.title}">How Did van Gogh’s Turbulent Mind Depict One of the Most
+                                    Complex Concepts in Physics?</h5>
+                            </a>
+                            <div class="post-thumbnail">
+                                <img th:src="@{'/images/'+${model.thumbnail}}" alt=""
+                                    style="width:100%; padding: 1em; border-radius: 1.5em;">
+                            </div>
+
+                            <th:block th:utext="${model.content}"></th:block>
+
+                            <!-- Post Tags -->
+                            <ul class="post-tags">
+                                <!-- <li><a href="#">Manual</a></li>
+                                <li><a href="#">Liberty</a></li>
+                                <li><a href="#">Recommendations</a></li>
+                                <li><a href="#">Interpritation</a></li> -->
+                                <li><a th:href="@{'/category/'+${model.categoryCode}}" id="categoryCode"
+                                        th:text="${model.categoryCode}">Manual</a></li>
+                            </ul>
+                            <!-- Post Meta -->
+                            <div class="post-meta second-part">
+                                <p><a href="#" class="post-author" th:text="${model.createdBy}">Katy Liu</a> on <a
+                                        href="#" class="post-date"
+                                        th:text="${#dates.format(model.createdDate, 'HH:mm dd-MM-yyyy')}">Sep 29, 2017
+                                        at 9:48
+                                        am</a></p>
+                            </div>
+                            <!-- rating five star -->
+                            <div class="ratings">
+                                <!-- load rating score of login user for this post from server  -->
+                                <input th:if="${model.ratings}==null" type="hidden" name="ratingScoreFromServer"
+                                    id="ratingScoreFromServer" value="0">
+                                <th:block th:if="${model.ratings}!=null">
+                                    <input type="hidden" th:if="${#sets.size(model.ratings)==0}" value="0"
+                                        name="ratingScoreFromServer" id="ratingScoreFromServer">
+                                    <input type="hidden" th:if="${#sets.size(model.ratings)!=0}"
+                                        th:value="${model.ratings[0].rating}" name="ratingScoreFromServer"
+                                        id="ratingScoreFromServer">
+                                </th:block>
+                                <!-- check emty SET using utility methods thymeleaf
+                                <input type="hidden" th:if="${#sets.isEmpty(model.ratings)}" value="00"> -->
+
+                                <!-- can not get size of null error
+                                <input type="hidden" th:if="${#sets.size(model.ratings)}" value="000"> -->
+
+                                <jsuites-rating value="4"
+                                    tooltip="Ugly, Bad, Average, Good, Outstanding"></jsuites-rating>
+                                <div id='console'></div>
+                                <script>
+                                    var ratingScoreFromServer = 0;
+                                    ratingScoreFromServer = document.getElementById('ratingScoreFromServer').value;
+                                    var idPost = 0;
+                                    idPost = document.querySelector('#idPost').value;
+                                    var myRating = jSuites.rating(document.querySelector('jsuites-rating'), {
+                                        number: 5,
+                                        value: ratingScoreFromServer,
+                                        tooltip: ['Very bad', 'Bad', 'Average', 'Good', 'Very good'],
+                                        onchange: function (ele, valueWhenUserClick) {
+                                            //exit loop when call myRating.setValue() will trigger onchange function
+                                            if (valueWhenUserClick === 0 || valueWhenUserClick === ratingScoreFromServer) {
+                                                return;
+                                            }
+                                            //Check if user unauthen
+                                            let ckusername = '';
+                                            ckusername = $.cookie('username');
+                                            if (ckusername === '' || ckusername === undefined) {
+                                                swal({ title: 'Error', type: 'error', text: 'Bạn phải đăng nhập để thực hiện xếp hạng' });
+                                                myRating.setValue(0);
+                                                return;
+                                            }
+                                            if (ratingScoreFromServer != 0) {
+                                                swal({ title: 'Error', type: 'error', text: 'Bạn đã thực hiện xếp hạng bài viết này' });
+                                                myRating.setValue(ratingScoreFromServer);
+                                                return;
+                                            }
+                                            var ratingScore = 0;
+                                            ratingScore = valueWhenUserClick;
+                                            const rating = { rating: ratingScore, postid: idPost, userid: 0 };
+                                            if (idPost != 0 && ratingScore != 0 && valueWhenUserClick != ratingScoreFromServer) {
+                                                $.ajax({
+                                                    url: '/api/new/rating',
+                                                    type: 'POST',
+                                                    async: false,
+                                                    contentType: 'application/json',
+                                                    data: JSON.stringify(rating),
+                                                    success: function (result) {
+                                                        //update five star = value user rate successed to server
+                                                        //console.log(rating);
+                                                        //console.log(result);
+                                                        swal('Xếp hạng thành công');
+                                                    },
+                                                    error: function (error) {
+                                                        console.log(rating);
+                                                        console.log(error);
+                                                        //myRating.setValue(0);
+                                                        if (error.status === 401) {
+                                                            swal({ title: 'Error', type: 'error', text: 'Bạn phải đăng nhập để thực hiện xếp hạng' });
+                                                        }
+                                                        if (error.status === 400 && error.responseText === 'Process saving rating is failed - You have rated this post') {
+                                                            swal({ title: 'Error', type: 'error', text: 'Bạn đã thực hiện xếp hạng bài viết này' });
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    });
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== Sidebar Area ========== -->
+            </div>
+
+            <!-- ============== Related Post ============== -->
+            <th:block layout:fragment="contentRow3">
+                <div sec:authorize="isAuthenticated()">
+                    <div class="post-a-comment-area mt-70">
+                        <!-- <h5>Get in Touch</h5> -->
+                        <!-- Contact Form -->
+                        <form action="#" method="post" id="formComment">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="group">
+                                        <textarea name="content" id="content" required></textarea>
+                                        <span class="highlight"></span>
+                                        <span class="bar"></span>
+                                        <label>Enter your comment</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button class="btn world-btn" id="postCommentButton">Post comment</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div>
+                    <!-- Comment Area Start -->
+                    <div class="comment_area clearfix mt-70">
+                        <ol id="containerItemComment">
+
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Load More btn -->
+                <div>
+                    <div class="load-more-btn mt-50 text-center">
+                        <a href="#" class="btn world-btn" id="loadMoreComments">Load More</a>
+                    </div>
+                </div>
+
+                <div sec:authorize="!isAuthenticated()">
+                    <div class="post-a-comment-area mt-70">
+                        <!-- <h5 class="text-center"><a th:href="@{/login}">Login/Register for comments</a></h5> -->
+                        <h5 class="text-center"><a href="#" data-toggle="modal"
+                                data-target="#exampleModalCenter">Login/Register for comments</a></h5>
+                        <!-- Contact Form -->
+                    </div>
+                </div>
+                <input type="hidden" name="authenticationName" th:value="${#authentication.name}">
+                <script>
+                    $("#formComment").validate({
+                        onKeyup: true,
+                        errorClass: "invalid-feedback",
+                        validClass: "valid-feedback",
+                        errorElement: "div",
+                        wrapper: "div"/* ,
+                            success:function(){
+                                alert('success');
+                            } */,
+                        //Callback for custom code when an invalid form is submitted
+                        invalidHandler: function (event, validator) {
+                            //console.log(event);
+                            console.log(validator);
+                        },
+                        rules: {
+                            content: {
+                                required: true,
+                                minlength: 1,
+                                maxlength: 200,
+                                normalizer: function (value) {
+                                    // Trim the value of the `field` element before
+                                    // validating. this trims only the value passed
+                                    // to the attached validators, not the value of
+                                    // the element itself.
+                                    return $.trim(value);
+                                }/* ,
+                                    nowhitespace: true */
+                            }
+                        },
+                        submitHandler: function (form, event) {
+                            event.preventDefault();
+                            var formData = new FormData($("#formComment")[0]);
+                            dataSent = Object.fromEntries(formData.entries());
+                            dataSent.idPost = idOfPost;
+                            dataSent.content=$.trim(dataSent.content);
+                            $.ajax({
+                                url: '/api/comment',
+                                type: 'POST',
+                                contentType: 'application/json',
+                                data: JSON.stringify(dataSent),
+                                success: function (result) {
+                                    resetCommentTextArea();
+                                    swal('Bình luận thành công');
+                                    $("#containerItemComment").html('');
+                                    loadComments(idOfPost, 1, 2);
+                                },
+                                error: function (error) {
+                                    console.log(error);
+                                }
+                            });
+                        }
+                        /* ,
+                        errorPlacement: function (error, element) {
+                            if (element.attr('name') == 'password') {
+                                error.insertAfter('#password');
+                            } else if(element.attr('name') == 'content') {
+                                error.insertAfter('#formComment');
+                            }else{
+                                error.insertAfter(element);
+                            }
+                        } */
+                    });
+                </script>
+
+                <script>
+                    var page = 1;
+                    var idOfPost = 4;
+                    $(document).ready(function (e) {
+                        idOfPost = $('#idPost').val();
+                        loadComments(idOfPost, 1, 2);
+                        $('#containerItemComment').on('click', 'a.deleteComment', function (e) {
+                            e.preventDefault();
+                            //Get the element that fired the event.
+                            var idCom = e.target.id;
+                            deleteComment(idCom);
+                        });
+                    });
+                    $('#loadMoreComments').click(function (e) {
+                        e.preventDefault();
+                        page++;
+                        loadComments(idOfPost, page, 2);
+                    });
+                    function resetCommentTextArea() {
+                        document.getElementById("content").value = "";
+                    };
+                    function deleteComment(idComment) {
+                        var ids = [];
+                        ids.push(idComment);
+                        if (idComment == null || idComment == undefined) {
+                            //alert('id is not of type number');
+                            return;
+                        }
+                        $.ajax({
+                            url: '/api/comment',
+                            type: 'DELETE',
+                            contentType: 'application/json',
+                            data: JSON.stringify(ids),
+                            success: function (result) {
+                                //console.log(result);
+                                $('li#' + idComment).remove();
+                            },
+                            error: function (error) {
+                                console.log(error);
+                            }
+                        });
+                    }
+
+                    function loadComments(idPost, pageP, limitP) {
+                        var dataSent = { id: idPost, page: pageP, limit: limitP };
+                        // console.log(dataSent);
+                        var str = "";
+                        let ids = [];//[5, 6, 7...,n]
+                        let comments = [];
+                        $.ajax({
+                            url: '/api/comment',
+                            type: 'GET',
+                            contentType: 'application/json',
+                            data: dataSent,
+                            success: function (result) {
+                                /* console.log(result);
+                                console.log($.cookie('username')); */
+                                let ckusername = '';
+                                ckusername = $.cookie('username');
+                                if (ckusername == undefined) {
+                                    ckusername = $('#authenticationName').val();
+                                }
+
+                                if (result.last == true) {
+                                    $('#loadMoreComments').hide();
+                                    page = 1;
+                                } else {
+                                    $('#loadMoreComments').show();
+                                }
+
+                                if (result.content.length != 0) {
+                                    $.each(result.content, function (i, item) {
+                                        ids.push(item.id);
+                                        comments.push({ id: item.id, createdBy: item.createdBy });
+                                        str += '<li class="single_comment_area" id="' + item.id + '">';
+                                        str += '<div class="comment-content">';
+                                        str += '<div class="comment-meta d-flex align-items-center justify-content-between">';
+                                        str += '<p><a href="#" class="post-author">' + item.createdBy + '</a> on <a href="#" class="post-date">' + moment(item.createdDate).format('HH:mm DD-MM-yyyy') + '</a></p>';
+                                        if (ckusername != '' && ckusername != undefined && ckusername != 'anonymousUser' && item.createdBy === ckusername) {
+                                            str += '<a href="#" class="comment-reply btn world-btn deleteComment" id="' + item.id + '">Delete</a>';
+                                        } else {
+                                            str += '<a href="#" style="display:none;" class="comment-reply btn world-btn deleteComment" id="' + item.id + '">Delete</a>';
+                                        }
+                                        str += '</div>';
+                                        str += '<p style="color: black">' + item.content + '</p>';
+                                        str += '</div>';
+                                        str += '</li>';
+                                    });
+
+                                    $("#containerItemComment").append(str);
+                                    //Mỗi khi append comments vào bài viết xem check lại toàn bộ các thẻ li comment kể cả đã load trước đó
+                                    //if (ckusername != '' && ckusername != undefined && item.createdBy===ckusername) thì mới có button delete
+                                    if (ckusername == '' || ckusername == undefined) {
+                                        //Giữ những lần request ví dụ như đang load được 2/3 trang commment thì logout lúc đó page 3 sẽ không có delete button
+                                        //Và page1, page2 đã load trước đó cũng loại bỏ đi delete button
+                                        $.each($(".deleteComment"), function (i, item) {
+                                            item.style.display = 'none';
+                                        });
+                                    } else {
+                                        //lấy ra tất cả delete buts xem nút nào có id===ckusername thì chỉnh lại display:
+                                    }
+                                    //th: load page 1 khi chưa đăng nhập sẽ không có nút Del, nhưng sau đó đăg nhập, load page2 thì page2 sẽ có nút Del + page1 thành có nút Del 
+
+                                    //c2: reload lại trang khi phát hiện đăng nhập ở 1 trang khác
+
+                                    //Mỗi khi gọi ajax load comments chúng ta thu được 1 array các id của các bình luận lần lượt add event cho các delete button trong bluan đó
+                                    //Thêm sự kiện click cho delete button mỗi khi comment mới được load vào
+                                    /* if (ids.length != 0) {
+                                        let idCurrent = 0;
+                                        $.each(ids, function (i, item) {
+                                            //Nếu có hiển thị nút delete mới add event click nếu không thì thôi
+                                            if ($('#' + item) != undefined) {
+                                                $('#' + item).click(function (e) {
+                                                    e.preventDefault();
+                                                    //idCurrent = $(this).attr('id');
+                                                    //search for the first element accept conditional
+                                                    deleteComment(comments.find(c => c.id == item));
+                                                });
+                                            }
+                                        });
+                                    } */
+                                }
+
+                            },
+                            error: function (error) {
+                                console.log(error);
+                            }
+                        });
+                    }   
+                </script>
+
+            </th:block>
+        </div>
+        <!-- exclude not import by thymeleaf -->
+    </div>
+    <!-- ***** Footer Area Start ***** -->
+    <!-- ***** Footer Area End ***** -->
+    <!-- jQuery (Necessary for All JavaScript Plugins) -->
+    <!-- Popper js -->
+    <!-- Bootstrap js -->
+    <!-- Plugins js -->
+    <!-- Active js -->
+</body>
+
+</html>

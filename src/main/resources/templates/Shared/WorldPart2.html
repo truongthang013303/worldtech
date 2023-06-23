@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="row justify-content-center" th:fragment="world_part2" id="row2">
+    <!-- ========== Single Blog Post ========== -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="single-blog-post post-style-3 mt-50 wow fadeInUpBig" data-wow-delay="0.2s">
+            <!-- Post Thumbnail -->
+            <div class="post-thumbnail">
+                <img th:src="@{/global/World/img/blog-img/b4.jpg}" alt="">
+                <!-- Post Content -->
+                <div class="post-content d-flex align-items-center justify-content-between">
+                    <!-- Catagory -->
+                    <div class="post-tag"><a href="#">travel</a></div>
+                    <!-- Headline -->
+                    <a href="#" class="headline">
+                        <h5>How Did van Gogh’s Turbulent Mind Depict One of the Most Complex Concepts in Physics?</h5>
+                    </a>
+                    <!-- Post Meta -->
+                    <div class="post-meta">
+                        <p><a href="#" class="post-author">Katy Liu</a> on <a href="#" class="post-date">Sep 29, 2017 at 9:48 am</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ========== Single Blog Post ========== -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="single-blog-post post-style-3 mt-50 wow fadeInUpBig" data-wow-delay="0.4s">
+            <!-- Post Thumbnail -->
+            <div class="post-thumbnail">
+                <img th:src="@{/global/World/img/blog-img/b5.jpg}" alt="">
+                <!-- Post Content -->
+                <div class="post-content d-flex align-items-center justify-content-between">
+                    <!-- Catagory -->
+                    <div class="post-tag"><a href="#">travel</a></div>
+                    <!-- Headline -->
+                    <a href="#" class="headline">
+                        <h5>How Did van Gogh’s Turbulent Mind Depict One of the Most Complex Concepts in Physics?</h5>
+                    </a>
+                    <!-- Post Meta -->
+                    <div class="post-meta">
+                        <p><a href="#" class="post-author">Katy Liu</a> on <a href="#" class="post-date">Sep 29, 2017 at 9:48 am</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ========== Single Blog Post ========== -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="single-blog-post post-style-3 mt-50 wow fadeInUpBig" data-wow-delay="0.6s">
+            <!-- Post Thumbnail -->
+            <div class="post-thumbnail">
+                <img th:src="@{/global/World/img/blog-img/b6.jpg}" alt="">
+                <!-- Post Content -->
+                <div class="post-content d-flex align-items-center justify-content-between">
+                    <!-- Catagory -->
+                    <div class="post-tag"><a href="#">travel</a></div>
+                    <!-- Headline -->
+                    <a href="#" class="headline">
+                        <h5>How Did van Gogh’s Turbulent Mind Depict One of the Most Complex Concepts in Physics?</h5>
+                    </a>
+                    <!-- Post Meta -->
+                    <div class="post-meta">
+                        <p><a href="#" class="post-author">Katy Liu</a> on <a href="#" class="post-date">Sep 29, 2017 at 9:48 am</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+    $(document).ready(function(e){
+        loadPostsWorldPart2('all');
+    });
+
+    function loadPostsWorldPart2(categoryCode) {
+            let url = '/api/new/page?page=1';
+            if(categoryCode!=undefined && categoryCode!=null && categoryCode!='')
+            {
+                url+=`&cateCode=${categoryCode}`;
+            }
+            url+='&sort=modifiedDate';
+            /* url+='&cateCode=';
+            url += categoryCode;
+            url += '&sort=createdDate';
+            url += '&direction=DESC'; */
+            let str='';
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    //console.log(data);
+                    $.each(data.content, function (i, item) {
+
+                        if(i===3){return false};
+
+                        str+=`<div class="col-12 col-md-6 col-lg-4">`;
+                            str+=`<div class="single-blog-post post-style-3 mt-50 wow fadeInUpBig" data-wow-delay="0.6s">`;
+                                str+=`<div class="post-thumbnail">`;
+                                    str+=`<img src="/images/${item.thumbnail}" alt="">`
+                                        str+=`<div class="post-content d-flex align-items-center justify-content-between">`;
+                                            str+=`<div class="post-tag"><a href="/category/${item.categoryCode}">${item.categoryCode}</a></div>`;
+                                            str+=`<a href="/baiviet/${item.id}" class="headline">`;
+                                                str+=`<h5>${item.title}</h5>`;
+                                            str+=`</a>`;
+                                            str+=`<div class="post-meta">`;
+                                                // str+=`<p><a href="#" class="post-author">${item.createdBy}</a> on <a href="#" class="post-date">${new Date(item.createdDate)}</a></p>`;
+                                                str+=`<p><a href="#" class="post-author">${item.createdBy}</a> on <a href="#" class="post-date">${moment(item.createdDate).startOf('hour').fromNow()}</a></p>`;
+                                            str+=`</div>`;
+                                        str+=`</div>`;
+                                str+=`</div>`;
+                            str+=`</div>`;
+                        str+=`</div>`;
+                    });
+                    $("#row2").html(str);
+                },
+                error: function (error) {
+                    console.log("loadPosts()-WorldPart2.html");
+                    console.log(error);
+                }
+            });
+        }
+</script>
+</div>   
+</html>

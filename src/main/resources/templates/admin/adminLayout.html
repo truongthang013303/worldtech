@@ -1,47 +1,73 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
 <head>
 	<th:block th:replace="/admin/fragments::admin_header"></th:block>
 </head>
-<body class="no-skin">
-<!-- topNav -->
-    <div th:replace="/admin/fragments::admin_topNav"></div>
-<!-- topNav -->	
-	<div class="main-container ace-save-state" id="main-container">
-			<script type="text/javascript">
-				try{ace.settings.loadState('main-container')}catch(e){}
-			</script>
-		<!-- sideBar -->
-    	<div th:replace="/admin/fragments::admin_sideBar"></div>
-		<!-- sideBar --> 
-		<div class="main-content">
-				<div class="main-content-inner" style="font-size: 16px;">
-					<div class="breadcrumbs ace-save-state" id="breadcrumbs">
-						<div class="nav-search" id="nav-search">
-							<form class="form-search">
-<!-- 								<span class="input-icon">
-									<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
-									<i class="ace-icon fa fa-search nav-search-icon"></i>
-								</span> -->
-							</form>
-						</div><!-- /.nav-search -->
-					</div>
 
-					<div layout:fragment="content">
-					
+<body class="no-skin">
+
+	<div th:replace="/admin/fragments::admin_topNav"></div>
+
+	<div class="main-container ace-save-state" id="main-container">
+		<script type="text/javascript">
+			try { ace.settings.loadState('main-container') } catch (e) { }
+		</script>
+
+		<div th:replace="/admin/fragments::admin_sideBar"></div>
+
+		<div class="main-content">
+			<div class="main-content-inner" style="font-size: 16px;">
+				<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+					<div class="nav-search" id="nav-search">
+						<form class="form-search">
+
+						</form>
 					</div>
-					
 				</div>
-		</div><!-- /.main-content -->
-			
-			<!-- footer -->
-	    	<div th:replace="/admin/fragments::admin_footer"></div>
-	    	<!-- footer -->
-			<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
-				<i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
-			</a>
-	</div><!-- /.main-container -->	
-			
-<div th:replace="~{/admin/fragments::admin_js}">	
+
+				<div layout:fragment="content">
+
+				</div>
+
+			</div>
+		</div>
+
+
+		<div th:replace="/admin/fragments::admin_footer"></div>
+
+		<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+			<i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+		</a>
+	</div>
+
+	<div th:replace="~{/admin/fragments::admin_js}"></div>
+
+	<!-- inline scripts related to this page -->
+	<script type="text/javascript">
+		//console.log('in adminLayout.html');
+		jQuery(function ($) {
+			$('.easy-pie-chart.percentage').each(function () {
+				var $box = $(this).closest('.infobox');
+				var barColor = $(this).data('color') || (!$box.hasClass('infobox-dark') ? $box.css('color') : 'rgba(255,255,255,0.95)');
+				var trackColor = barColor == 'rgba(255,255,255,0.95)' ? 'rgba(255,255,255,0.25)' : '#E2E2E2';
+				var size = parseInt($(this).data('size')) || 50;
+				$(this).easyPieChart({
+					barColor: barColor,
+					trackColor: trackColor,
+					scaleColor: false,
+					lineCap: 'butt',
+					lineWidth: parseInt(size / 10),
+					animate: ace.vars['old_ie'] ? false : 1000,
+					size: size
+				});
+			})
+
+			//flot chart resize plugin, somehow manipulates default browser resize event to optimize it!
+			//but sometimes it brings up errors with normal resize event handlers
+			$.resize.throttleWindow = false;
+		})
+	</script>
 </body>
+
 </html>

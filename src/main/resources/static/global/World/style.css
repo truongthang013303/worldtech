@@ -12,8 +12,11 @@
 /* mixin */
 /* :: Import Fonts */
 
-/*@import url("https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700|Work+Sans:300,400,500,600,700");*/
-@import url("https://fonts.googleapis.com/css2?family=Roboto:300,400,500,700");
+/* @import url("https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700|Work+Sans:300,400,500,600,700"); */
+/* @import url('https://fonts.googleapis.com/css2?family=Roboto:300,400,500,700');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@200..900'); */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 /* :: Import All CSS */
 @import url(css/bootstrap.min.css);
 @import url(css/animate.css);
@@ -30,7 +33,7 @@ body {
   font-family: "Work Sans", sans-serif; }
 
 .ubuntu-fonts {
-  font-family: "Ubuntu", sans-serif; }
+  font-family: "Roboto", sans-serif; }
 
 h1,
 h2,
@@ -43,8 +46,10 @@ h6 {
   line-height: 1.3; }
 
 p {
-  color: #8d8d8d;
-  font-size: 14px;
+  /* color: #8d8d8d;
+  customize */
+  color: black;
+  font-size: 16px;
   line-height: 1.4; }
 
 a {
@@ -54,10 +59,10 @@ a {
   outline: none;
   font-size: 14px;
   font-weight: 400;
-  font-family: "Ubuntu", sans-serif;
+  font-family: "Roboto", sans-serif;
   color: #8d8d8d; }
   a:hover, a:focus {
-    font-family: "Ubuntu", sans-serif;
+    font-family: "Roboto", sans-serif;
     -webkit-transition-duration: 500ms;
     transition-duration: 500ms;
     text-decoration: none;
@@ -413,7 +418,7 @@ img {
       text-align: center;
       line-height: 45px;
       font-size: 24px;
-      font-family: "Ubuntu", sans-serif;
+      font-family: "Roboto", sans-serif;
       font-weight: 700; }
   .hero-area .hero-post-slide .single-slide .post-title a {
     margin-bottom: 0;
@@ -439,7 +444,7 @@ img {
     color: #000000;
     margin-bottom: 0;
     margin-right: auto;
-    font-family: "Ubuntu", sans-serif;
+    font-family: "Roboto", sans-serif;
     font-weight: 700; }
   .world-catagory-area .nav-tabs .nav-link {
     padding: 0 1em;
@@ -500,7 +505,11 @@ img {
     position: relative;
     z-index: 1; }
     .single-blog-post .post-thumbnail img {
-      width: 100%; }
+      width: 100%; 
+      /* customize */
+      height: 100%;
+      object-fit: cover;
+    }
     .single-blog-post .post-thumbnail .post-cta {
       position: absolute;
       top: 15px;
@@ -557,7 +566,10 @@ img {
       -ms-flex: 0 0 97px;
       flex: 0 0 97px;
       min-width: 97px;
-      margin-right: 15px; }
+      margin-right: 15px; 
+      /* customize */
+      aspect-ratio: 1/1;
+    }
       @media only screen and (min-width: 992px) and (max-width: 1199px) {
         .single-blog-post.post-style-2 .post-thumbnail {
           margin-right: 5px; } }
@@ -585,7 +597,10 @@ img {
       margin-right: 15px; }
   .single-blog-post.post-style-3 .post-thumbnail {
     position: relative;
-    z-index: 1; }
+    z-index: 1;
+    /* customize */
+    aspect-ratio:3/1.75
+    }
     .single-blog-post.post-style-3 .post-thumbnail::after {
       width: 100%;
       height: 100%;
@@ -642,19 +657,28 @@ img {
       -ms-flex: 0 0 200px;
       flex: 0 0 200px;
       min-width: 200px;
-      margin-right: 20px; }
+      margin-right: 20px; 
+      /* customize */
+      aspect-ratio: 1/1;
+    }
       @media only screen and (max-width: 767px) {
         .single-blog-post.post-style-4 .post-thumbnail {
           -webkit-box-flex: 0;
           -ms-flex: 0 0 100%;
           flex: 0 0 100%;
-          min-width: 100%; } }
+          min-width: 100%; 
+          /* customize */
+          aspect-ratio: 2/1;
+        } }
       @media only screen and (min-width: 576px) and (max-width: 767px) {
         .single-blog-post.post-style-4 .post-thumbnail {
           -webkit-box-flex: 0;
           -ms-flex: 0 0 250px;
           flex: 0 0 250px;
-          min-width: 250px; } }
+          min-width: 250px; 
+          /* customize */
+          aspect-ratio: 1/1;             
+        } }
     .single-blog-post.post-style-4 .post-content {
       padding: 5px 30px 5px 5px; }
       .single-blog-post.post-style-4 .post-content .headline h5 {
@@ -723,7 +747,7 @@ img {
     color: #000000;
     margin-bottom: 0;
     margin-right: auto;
-    font-family: "Ubuntu", sans-serif;
+    font-family: "Roboto", sans-serif;
     font-weight: 700;
     padding: 10px 0;
     border-bottom: 2px solid #f1f1f1; }
@@ -741,7 +765,7 @@ img {
     color: #000000;
     margin-bottom: 0;
     margin-right: auto;
-    font-family: "Ubuntu", sans-serif;
+    font-family: "Roboto", sans-serif;
     font-weight: 700;
     padding: 12px 0;
     border-bottom: 2px solid #f1f1f1;
@@ -828,7 +852,7 @@ img {
     line-height: 1.8;
     margin-bottom: 30px;
     color: #8d8d8d;
-    font-family: "Ubuntu", sans-serif; }
+    font-family: "Roboto", sans-serif; }
   .single-blog-content .post-content blockquote {
     border-left: 2px solid;
     border-color: #0000ff;
@@ -897,7 +921,7 @@ img {
     font-size: 18px;
     color: #000000;
     margin-bottom: 0;
-    font-family: "Ubuntu", sans-serif;
+    font-family: "Roboto", sans-serif;
     font-weight: 700;
     margin-bottom: 30px; }
   .contact-form button.world-btn,
@@ -935,7 +959,7 @@ img {
     left: 0;
     top: 5px;
     transition: 0.5s ease all;
-    font-family: "Ubuntu", sans-serif; }
+    font-family: "Roboto", sans-serif; }
   .group .bar {
     position: relative;
     display: block;
@@ -1238,7 +1262,7 @@ textarea:focus ~ .highlight {
         margin: 50px 0; } }
   .footer-area .footer-single-widget h5 {
     font-size: 18px;
-    font-family: "Ubuntu", sans-serif;
+    font-family: "Roboto", sans-serif;
     margin-bottom: 20px;
     font-weight: 700;
     color: #ffffff; }
@@ -1255,7 +1279,7 @@ textarea:focus ~ .highlight {
       color: #959595;
       font-size: 14px;
       padding: 0 5px;
-      font-family: "Ubuntu", sans-serif; }
+      font-family: "Roboto", sans-serif; }
     .footer-area .footer-single-widget form button {
       position: absolute;
       height: 35px;

@@ -3,26 +3,33 @@ package com.example.demo1.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.demo1.dto.AppUser;
+import org.apache.hadoop.mapreduce.v2.app.webapp.App;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
-import com.example.demo1.dto.MyUser;
+@Service
+public class SecurityUtils {
+	@Autowired
+	PasswordEncoder passwordEncoder;
 
-public class SecurityUtils 
-{
-	
-	public static MyUser getPrincipal() {
-		MyUser myUser = (MyUser) (SecurityContextHolder.getContext()).getAuthentication().getPrincipal();
-        return myUser;
-    }
-	
-	@SuppressWarnings("unchecked")
-	public static List<String> getAuthorities() {
-		List<String> results = new ArrayList<>();
-		List<GrantedAuthority> authorities = (List<GrantedAuthority>)(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
-        for (GrantedAuthority authority : authorities) {
-            results.add(authority.getAuthority());
-        }
-		return results;
+	public Authentication getAuthentication() {
+		return SecurityContextHolder.getContext().getAuthentication();
+	}
+
+	public AppUser getPrincipal() {
+		AppUser appUser = (AppUser) (SecurityContextHolder.getContext()).getAuthentication().getPrincipal();
+		return appUser;
+	}
+
+	public String bcryptEncryptor(String plainText) {
+		return passwordEncoder.encode(plainText.trim());
+	}
+	public Boolean doPasswordsMatch(String rawPassword, String encodedPassword){
+		return passwordEncoder.matches(rawPassword.trim(), encodedPassword);
 	}
 }

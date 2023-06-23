@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{/admin/adminLayout.html}">
+
+<head>
+	<title>Danh sách</title>
+</head>
+
+<body>
+	<div class="page-content" layout:fragment="content">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="widget-box table-filter">
+					<div class="table-btn-controls">
+						<div class="pull-left tableTools-container">
+							<div class="dt-buttons btn-overlap btn-group">
+
+								<button sec:authorize="isAuthenticated() and hasAuthority('DELETE_POST')" id="btnDelete"
+									type="button" onclick="warningBeforeDelete()"
+									class="dt-button buttons-html5 btn btn-white btn-primary btn-bold"
+									data-toggle="tooltip" title='Xóa bài viết'>
+									<span> <i class="fa fa-trash-o bigger-110 pink"></i></span>Xóa
+								</button>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<table class="table table-striped hover" id="myTable" style="width:100%">
+		</table>
+
+		<script>
+			function warningBeforeDelete() {
+				//e.preventDefault();
+				swal({
+					title: "Xác nhận xóa",
+					text: "Bạn có chắc chắn muốn xóa hay không",
+					type: "warning",
+					showCancelButton: true,
+					confirmButtonClass: "btn-success",
+					cancelButtonClass: "btn-danger",
+					confirmButtonText: "Xác nhận",
+					cancelButtonText: "Hủy bỏ",
+				}).then(function (isConfirm) {
+					if (isConfirm.value == true) {
+						var ids = $('tbody input[type=checkbox]:checked').map(function () {
+							return $(this).val();
+						}).get();
+						console.log(isConfirm);
+						console.log(ids);
+						deleteComment(ids);
+					}
+				});
+			}
+
+			function deleteComment(ids) {
+				if (ids.length != 0) {
+					$.ajax({
+						url: '/api/comment',
+						type: 'DELETE',
+						async: false,
+						contentType: 'application/json',
+						data: JSON.stringify(ids),
+						success: function (result) {
+							swal({ title: 'Success', type: 'success', text: 'Thành công' });
+							table.draw();
+						},
+						error: function (error) {
+							swal({ title: 'Error', type: 'error', text: 'Thất bại mời thử lại' });
+						}
+					});
+				}
+			}
+
+			var table;
+			$(document).ready(function () {
+				//Column3: CreatedDate
+				let orderItem = [3, "desc"];
+				table = $('#myTable').DataTable({
+					dom: 'Bfrtip',
+					ajax: {
+						url: '/api/comment/page',
+						type: 'GET',
+						dataType: 'json',
+						data: function (data) {
+							console.log(data);
+							//start bắt đầu từ element bao nhiêu vd page1:start=0, length=limit lấy bao nhiêu ele bắt đầu từ start, draw=số lần vẽ table; 
+							return { start: data.start, length: data.length, draw: data.draw, orderCol: data.columns[data.order[0].column].name, sortDir: data.order[0].dir, search: data.search.value }
+						}
+					},
+					order: [orderItem],
+					// stateSave: true,
+					processing: true,
+					serverSide: true,
+					lengthChange: false,
+					responsive: true,
+					search: {
+						return: true,
+					},
+					language: {
+						searchPlaceholder: "Content"
+					},
+					searchDelay: 400,
+					select: true,
+					buttons: [
+						{
+							text: 'Select all',
+							action: function () {
+								table.rows().select();
+							}
+						},
+						{
+							text: 'Select none',
+							action: function () {
+								table.rows().deselect();
+							}
+						},
+						/* {
+							text: 'Get selected data',
+							action: function () {
+								let count = table.rows({ selected: true }).count();
+								let data = table.rows({ selected: true }).data();
+								for (let i = 0; i < count; i++) {
+									console.log(data[i]);
+								}
+							}
+						}, */
+						{
+							text: 'Remove',
+							action: function () {
+								swal({
+									title: "Xác nhận xóa",
+									text: "Bạn có chắc chắn muốn xóa hay không",
+									type: "warning",
+									showCancelButton: true,
+									confirmButtonClass: "btn-success",
+									cancelButtonClass: "btn-danger",
+									confirmButtonText: "Xác nhận",
+									cancelButtonText: "Hủy bỏ",
+								}).then(function (isConfirm) {
+									if (isConfirm.value == true) {
+										//Danh sach id cua cac comment muon xoa
+										let ids = [];
+										var count = table.rows({ selected: true }).count();//count=3
+										var data = table.rows({ selected: true }).data();//data{0:a, 1:b, 2:c}
+										for (let i = 0; i < count; i++) {
+											ids.push(data[i].id);
+										}
+										deleteComment(ids);
+									}
+								});
+
+							}
+						}
+					],
+					columns: [
+						{
+							title: 'Id',
+							name: 'id',
+							data: 'id',
+							visible: true,
+							sortable: false,
+							searchable: false,
+							className: "my_class"
+						},
+						{
+							title: 'Content',
+							name: 'content',
+							data: 'content',
+							sortable: false,
+							searchable: false
+						},
+						{
+							title: 'Created By',
+							name: 'createdBy',
+							data: 'createdBy',
+							searchable: false
+						},
+						{
+							title: 'Created Date',
+							name: 'createdDate',
+							data: 'createdDate',
+							render: function (data, type, JsonResultRow, meta) {
+								return `<td class="sorting_1">${moment(JsonResultRow.createdDate).format('DD/MM/YYYY, HH:mm:ss')}</td>`;
+							},
+							searchable: false
+						},
+						{
+							title: 'Title Post',
+							name: 'titlePost',
+							data: 'titlePost',
+							searchable: false,
+							sortable: false
+						}
+					]
+				});
+
+				// Delete a record
+				/* $('#myTable').on('click', 'td>a.editor-delete', function (e) {
+					e.preventDefault();
+					//Sort and then redraw the table maintaining current paging position:
+					warningBeforeDelete();
+					//table.draw(false);
+				}); */
+
+				//event Click on tr(table row)
+				/* $('#myTable').on('click', 'tbody tr', function (e) {
+					e.preventDefault();
+					//Sort and then redraw the table maintaining current paging position:
+					alert($(this).val());
+					//table.draw(false);
+				}); */
+
+				/* 				$("#checkAll").change(function () {
+									var status = $(this).is(":checked") ? true : false;
+									$(".chk").prop("checked", status);
+								}); */
+
+			});
+		</script>
+
+	</div>
+</body>
+
+</html>

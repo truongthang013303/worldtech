@@ -14,6 +14,10 @@ public class PrivilegeConverter {
         result.setId(entity.getId());
         result.setName(entity.getName());
         result.setCode(entity.getCode());
+        result.setCreatedBy(entity.getCreatedBy());
+        result.setCreatedDate(entity.getCreatedDate());
+        result.setModifiedDate(entity.getModifiedDate());
+        result.setModifiedBy(entity.getModifiedBy());
         return result;
     }
 

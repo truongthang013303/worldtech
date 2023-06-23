@@ -1,68 +1,43 @@
 package com.example.demo1.dto;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
+import com.example.demo1.entity.PostRating;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.beans.factory.config.SetFactoryBean;
 
+@Setter
+@Getter
 public class UserDTO extends AbstractDTO<UserDTO>
 {	
 	@NotBlank
-	@Length(min = 8, max = 32)
+	@NotNull
+	@Size(min = 1, max = 32, message = "userName must be between 1 and 32 characters")
 	private String userName;
 
 	@NotBlank
-	@Length(min = 8, max = 32)
+	@NotNull
+	@Size(min = 1, max = 32, message = "password must be between 1 and 32 characters")
 	private String password;
 	
 	@NotBlank
-	@Length(min = 8, max = 32)
+	@NotNull
+	@Size(min = 1, max = 200, message = "fullName must be between 1 and 200 characters")
 	private String fullName;
 	
 	private Integer status;
-	
-	@NotEmpty
+
+	private String interestCode;
+
 	private List<String> roleCode = new ArrayList<>();
 
-	public String getUserName() {
-		return userName;
-	}
-
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getFullName() {
-		return fullName;
-	}
-
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
-	}
-
-	public Integer getStatus() {
-		return status;
-	}
-
-	public void setStatus(Integer status) {
-		this.status = status;
-	}
-
-	public List<String> getRoleCode() {
-		return roleCode;
-	}
-
-	public void setRoleCode(List<String> roleCode) {
-		this.roleCode = roleCode;
-	}
+	private Set<PostRating> ratings;
 }

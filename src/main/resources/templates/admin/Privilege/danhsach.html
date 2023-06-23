@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{/admin/adminLayout.html}">
+
+<head>
+	<title>Danh sách</title>
+</head>
+
+<body>
+	<div class="page-content" layout:fragment="content">
+		<form th:action="@{/quantri/privilege/danhsach}" id="formSubmit" method="get">
+			<div class="row">
+				<div class="col-xs-12">
+					<div class="widget-box table-filter">
+						<div class="table-btn-controls">
+							<div class="pull-right tableTools-container">
+								<div class="dt-buttons btn-overlap btn-group">
+									<a style="display: none;" flag="info"
+										class="dt-button buttons-colvis btn btn-white btn-primary btn-bold"
+										data-toggle="tooltip" title='Thêm' href='/quantri/privilege/showeditform'>
+										<span> <i class="fa fa-plus-circle bigger-110 purple"></i>
+										</span>Thêm
+									</a>
+									<!-- <button id="btnDelete" type="button"
+									onclick="warningBeforeDelete()"
+									class="dt-button buttons-html5 btn btn-white btn-primary btn-bold"
+									data-toggle="tooltip" title='Xóa'>
+									<span> <i class="fa fa-trash-o bigger-110 pink"></i>
+									</span>Xóa
+								</button> -->
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12">
+							<table class="table table-striped hover" id="myTable" style="width:100%"></table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+		<script>
+			var table;
+			$(document).ready(function () {
+				//Column7: CreatedDate
+				let orderItem = [4, "desc"];
+				table = $('#myTable').DataTable({
+					processing: true,
+					serverSide: true,
+					lengthChange: false,
+					search: {
+						return: true,
+					},
+					language: {
+						searchPlaceholder: "Name"
+					},
+					searchDelay: 400,
+					select: true,
+					responsive: true,
+					order: [orderItem],
+					ajax: {
+						url: '/api/privilege',
+						type: 'GET',
+						dataType: 'json',
+						data: function (data) {
+							//start bắt đầu từ element bao nhiêu vd page1:start=0, length=limit lấy bao nhiêu ele bắt đầu từ start, draw=số lần vẽ table; 
+							return { start: data.start, length: data.length, draw: data.draw, orderCol: data.columns[data.order[0].column].name, sortDir: data.order[0].dir, search: data.search.value }
+						}
+					}
+					,
+					columns: [
+						{
+							title: 'Id',
+							name: 'id',
+							data: 'id',
+							visible: false
+						},
+						{
+							title: '<input type="checkbox" id="checkAll">',
+							render: function (data, type, JsonResultRow, meta) {
+								return '<input class="chk" type="checkbox" id="checkbox_' + JsonResultRow.id + '" value="' + JsonResultRow.id + '">';
+							},
+							sortable: false,
+							searchable: false
+						},
+						{
+							title: 'Name',
+							name: 'name',
+							data: 'name',
+							searchable: false
+						},
+						{
+							title: 'Code',
+							name: 'code',
+							data: 'code',
+							searchable: false
+						},
+						{
+							title: 'Created By',
+							name: 'createdBy',
+							data: 'createdBy',
+							searchable: false
+						},
+						{
+							title: 'Creted Date',
+							name: 'createdDate',
+							data: 'createdDate',
+							render: function (data, type, JsonResultRow, meta) {
+								return `<td class="sorting_1">${moment(JsonResultRow.createdDate).format('DD/MM/YYYY, HH:mm:ss')}</td>`;
+							},
+							searchable: false
+						},
+						{
+							title: 'Action',
+							name: 'action',
+							render: function (data, type, JsonResultRow, meta) {
+								return '<a href="/quantri/privilege/chinhsua?id=' + JsonResultRow.id + '">Edit</a>';
+							},
+							sortable: false,
+							searchable: false
+						}
+					]
+				});
+
+				$("#checkAll").change(function () {
+					var status = $(this).is(":checked") ? true : false;
+					$(".chk").prop("checked", status);
+				});
+
+			});
+		</script>
+	</div>
+</body>
+
+</html>

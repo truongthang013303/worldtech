@@ -35,7 +35,12 @@ public class UserConverter {
 			listStringRoles.add(roleEntity.getCode());
 		}
 		result.setRoleCode(listStringRoles);
-		
+		result.setRatings(entity.getRatings());
+
+		result.setCreatedBy(entity.getUserName());
+		result.setCreatedDate(entity.getCreatedDate());
+		result.setModifiedBy(entity.getModifiedBy());
+		result.setModifiedDate(entity.getModifiedDate());
 		return result;
 	}
 
